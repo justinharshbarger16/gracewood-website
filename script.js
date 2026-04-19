@@ -257,25 +257,17 @@ function cacheDom() {
   dom.roundTableCount = document.getElementById("roundTableCount");
   dom.banquetTableCount = document.getElementById("banquetTableCount");
   dom.totalSeatingCount = document.getElementById("totalSeatingCount");
-  dom.danceFloorStatus = document.getElementById("danceFloorStatus");
   dom.headTableStatus = document.getElementById("headTableStatus");
   dom.layoutDensity = document.getElementById("layoutDensity");
   dom.layoutFlow = document.getElementById("layoutFlow");
-  dom.plannerTips = document.getElementById("plannerTips");
-  dom.plannerGuideText = document.getElementById("plannerGuideText");
-  dom.plannerGuideAction = document.getElementById("plannerGuideAction");
   dom.layoutGeneratorForm = document.getElementById("layoutGeneratorForm");
   dom.layoutEventType = document.getElementById("layoutEventType");
   dom.layoutGuestCount = document.getElementById("layoutGuestCount");
   dom.layoutTableStyle = document.getElementById("layoutTableStyle");
   dom.layoutCateringStyle = document.getElementById("layoutCateringStyle");
   dom.layoutIncludeCeremony = document.getElementById("layoutIncludeCeremony");
-  dom.layoutIncludeBuffet = document.getElementById("layoutIncludeBuffet");
   dom.layoutIncludeDanceFloor = document.getElementById("layoutIncludeDanceFloor");
   dom.layoutIncludeSweetheart = document.getElementById("layoutIncludeSweetheart");
-  dom.generateLayoutButton = document.getElementById("generateLayoutButton");
-  dom.manualRefineButton = document.getElementById("manualRefineButton");
-  dom.manualRefinementBar = document.getElementById("manualRefinementBar");
   dom.layoutGuestCountSummary = document.getElementById("layoutGuestCountSummary");
   dom.layoutTableStyleSummary = document.getElementById("layoutTableStyleSummary");
   dom.layoutServiceSummary = document.getElementById("layoutServiceSummary");
@@ -554,21 +546,6 @@ function triggerEstimatorRefresh() {
 }
 
 function setupLayoutPlanner() {
-  dom.addItemButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      addLayoutItem(button.dataset.itemType);
-      state.activeLayoutPreset = state.activeLayoutPreset || "Custom Layout";
-      markJourneyStep("layout", true);
-    });
-  });
-
-  dom.presetButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      applyPreset(button.dataset.preset);
-      markJourneyStep("layout", true);
-    });
-  });
-
   dom.resetLayoutButton.addEventListener("click", resetLayout);
   dom.printLayoutButton.addEventListener("click", () => {
     setPrintMode("layout");
@@ -582,28 +559,25 @@ function setupLayoutPlanner() {
       event.preventDefault();
       generateLayoutFromInputs();
     });
-  }
 
-  if (dom.manualRefineButton && dom.manualRefinementBar) {
-    dom.manualRefineButton.addEventListener("click", () => {
-      dom.manualRefinementBar.classList.toggle("is-open");
-      dom.manualRefineButton.textContent = dom.manualRefinementBar.classList.contains("is-open")
-        ? "Hide Manual Refinements"
-        : "Show Manual Refinements";
-    });
-  }
-
-  if (dom.plannerGuideAction) {
-    dom.plannerGuideAction.addEventListener("click", () => {
-      if (!state.layoutItems.length) {
-        generateLayoutFromInputs();
-      } else {
-        toggleSummaryDrawer(true);
+    [
+      dom.layoutEventType,
+      dom.layoutGuestCount,
+      dom.layoutTableStyle,
+      dom.layoutCateringStyle,
+      dom.layoutIncludeCeremony,
+      dom.layoutIncludeDanceFloor,
+      dom.layoutIncludeSweetheart
+    ].forEach((field) => {
+      if (!field) return;
+      field.addEventListener("change", generateLayoutFromInputs);
+      if (field.tagName === "INPUT" && field.type === "number") {
+        field.addEventListener("input", generateLayoutFromInputs);
       }
     });
   }
-  renderLayoutItems();
-  updateLayoutSummary();
+
+  generateLayoutFromInputs();
 }
 
 function syncLayoutPreferencesFromInputs() {
@@ -617,9 +591,9 @@ function syncLayoutPreferencesFromInputs() {
     headStyle: dom.layoutIncludeSweetheart.checked ? "sweetheart" : "none",
     includeCeremony: dom.layoutIncludeCeremony.checked,
     includeBuffet: dom.layoutCateringStyle.value === "buffet",
-    includeCookieTable: true,
+    includeCookieTable: false,
     includeDanceFloor: dom.layoutIncludeDanceFloor.checked,
-    includeGiftTable: true,
+    includeGiftTable: false,
     keepOpenBarSide: true
   };
 

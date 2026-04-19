@@ -1158,8 +1158,8 @@ label {
 
 .tool-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(320px, 0.9fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 1.1rem;
   align-items: start;
 }
 
@@ -1304,8 +1304,8 @@ label {
 .layout-planner-wrap {
   margin-top: 1.25rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
-  gap: 1.1rem;
+  grid-template-columns: minmax(0, 1.34fr) minmax(260px, 0.66fr);
+  gap: 1rem;
   align-items: start;
 }
 
@@ -1621,7 +1621,7 @@ label {
 
 .planner-automation-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
+  grid-template-columns: minmax(0, 1fr);
   gap: 1rem;
 }
 
@@ -1702,11 +1702,6 @@ label {
   border: 1px solid rgba(185, 150, 88, 0.14);
   color: var(--text-soft);
   font-size: 0.85rem;
-}
-
-.planner-guide-card {
-  display: grid;
-  gap: 0.8rem;
 }
 
 .planner-seat-note {

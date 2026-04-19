@@ -457,11 +457,6 @@
                 <p class="policy-note subtle">
                   For weddings, bartending is exclusively provided through Gibsonia Bar Tending Service so the venue experience stays consistent and straightforward for clients and guests.
                 </p>
-                <div class="planner-bridge-card">
-                  <h4>Recommended next step</h4>
-                  <p id="packageRecommendationText">After you choose your package, Gracewood can generate a room layout that fits your guest count and table style.</p>
-                  <button class="button button-secondary" id="applyPackageToLayout" type="button">Use This in My Layout</button>
-                </div>
               </div>
             </article>
           </div>
@@ -530,16 +525,8 @@
                           <span>Include ceremony setup</span>
                         </label>
                         <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeCookieTable" checked>
-                          <span>Include cookie table</span>
-                        </label>
-                        <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeDanceFloor" checked>
                           <span>Keep dance floor</span>
-                        </label>
-                        <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeGiftTable" checked>
-                          <span>Include gift table</span>
                         </label>
                         <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeBuffet">
@@ -549,7 +536,6 @@
 
                       <div class="planner-generator-actions">
                         <button class="button button-primary" id="generateLayoutButton" type="submit">Generate My Layout</button>
-                        <button class="button button-secondary" id="manualRefineButton" type="button">Show Manual Refinements</button>
                       </div>
                     </form>
                   </div>
@@ -560,27 +546,8 @@
                       <li>Guest count translated into the exact number of round or long tables required</li>
                       <li>Open circulation from the main entrance into the event floor</li>
                       <li>Room access to the kitchen/bar side, bridal suite, and restrooms</li>
-                      <li>Buffet, cookie table, sweetheart table, and ceremony setup placed where they naturally fit</li>
+                      <li>Only tables, buffet setup, and sweetheart/head table change as the layout updates</li>
                     </ul>
-                    <p class="planner-helper-copy">After the room is generated, you can still drag pieces around and make smaller manual adjustments if you want to fine-tune it.</p>
-                  </div>
-                </div>
-
-                <div class="planner-refinement-bar" id="manualRefinementBar">
-                  <div class="planner-refinement-header">
-                    <span>Optional manual refinements</span>
-                    <small>Use these only if you want to fine-tune the generated layout.</small>
-                  </div>
-                  <div class="control-chip-grid">
-                    <button type="button" class="control-chip" data-item-type="round">Round Table</button>
-                    <button type="button" class="control-chip" data-item-type="banquet">Long Table</button>
-                    <button type="button" class="control-chip" data-item-type="sweetheart">Sweetheart Table</button>
-                    <button type="button" class="control-chip" data-item-type="head">Head Table</button>
-                    <button type="button" class="control-chip" data-item-type="dance">Dance Floor</button>
-                    <button type="button" class="control-chip" data-item-type="gift">Gift Table</button>
-                    <button type="button" class="control-chip" data-item-type="dessert">Dessert Table</button>
-                    <button type="button" class="control-chip" data-item-type="buffet">Buffet</button>
-                    <button type="button" class="control-chip" data-item-type="cookie">Cookie Table</button>
                   </div>
                 </div>
 
@@ -634,18 +601,9 @@
                 <div><span>Preferred layout</span><strong id="layoutPresetName">Not started</strong></div>
                 <div><span>Flow note</span><strong id="layoutFlow">Select your planning inputs</strong></div>
               </div>
-              <div class="planner-tips">
-                <h4>Quick layout tips</h4>
-                <ul id="plannerTips">
-                  <li>Keep access clear to the Kitchen / Bar and restrooms.</li>
-                  <li>Use a focal point for your head or sweetheart table.</li>
-                  <li>Leave open circulation from the entrance into the main room.</li>
-                </ul>
-              </div>
-              <div class="planner-guide-card">
-                <h4>Next recommended step</h4>
-                <p id="plannerGuideText">Start with a preset layout to place a focal point, guest seating, and circulation zones in a realistic Gracewood flow.</p>
-                <button class="button button-secondary full-width" id="plannerGuideAction" type="button">Apply a Starter Layout</button>
+              <div class="planner-note-card">
+                <h4>Layout recommendation</h4>
+                <p id="layoutRecommendationNote">This layout is designed to balance guest comfort, circulation, and access to key venue spaces.</p>
               </div>
               <p class="planner-seat-note">Seating assumptions: round table = 8 guests, long table = 8 guests, sweetheart table = 2 guests, head table = 8 guests.</p>
               <div class="planner-note-card">
