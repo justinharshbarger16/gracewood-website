@@ -200,11 +200,11 @@ const dom = {};
 
 document.addEventListener("DOMContentLoaded", () => {
   cacheDom();
+  setupHeroImageFallback();
   setupNavigation();
   renderCalendar();
   setupPackageTabs();
   setupEstimator();
-  setupVisionBuilder();
   setupLayoutPlanner();
   setupAssistant();
   setupSummaryDrawer();
@@ -245,15 +245,7 @@ function cacheDom() {
   dom.hourlyHoursField = document.getElementById("hourlyHoursField");
   dom.weddingAddOnFields = document.getElementById("weddingAddOnFields");
   dom.stepperButtons = document.querySelectorAll(".stepper-button");
-
-  dom.visionEventType = document.getElementById("visionEventType");
-  dom.visionGuestRange = document.getElementById("visionGuestRange");
-  dom.visionAtmosphere = document.getElementById("visionAtmosphere");
-  dom.visionCeremony = document.getElementById("visionCeremony");
-  dom.visionCoordination = document.getElementById("visionCoordination");
-  dom.visionBartending = document.getElementById("visionBartending");
-  dom.visionRecommendation = document.getElementById("visionRecommendation");
-  dom.applyVisionRecommendation = document.getElementById("applyVisionRecommendation");
+  dom.heroOwnerImage = document.getElementById("heroOwnerImage");
 
   dom.eventSpaceCanvas = document.getElementById("eventSpaceCanvas");
   dom.floorplanShell = document.getElementById("floorplanShell");
@@ -271,6 +263,24 @@ function cacheDom() {
   dom.plannerTips = document.getElementById("plannerTips");
   dom.plannerGuideText = document.getElementById("plannerGuideText");
   dom.plannerGuideAction = document.getElementById("plannerGuideAction");
+  dom.layoutGeneratorForm = document.getElementById("layoutGeneratorForm");
+  dom.layoutEventType = document.getElementById("layoutEventType");
+  dom.layoutGuestCount = document.getElementById("layoutGuestCount");
+  dom.layoutTableStyle = document.getElementById("layoutTableStyle");
+  dom.layoutHeadStyle = document.getElementById("layoutHeadStyle");
+  dom.layoutIncludeCeremony = document.getElementById("layoutIncludeCeremony");
+  dom.layoutIncludeBuffet = document.getElementById("layoutIncludeBuffet");
+  dom.layoutIncludeCookieTable = document.getElementById("layoutIncludeCookieTable");
+  dom.layoutIncludeDanceFloor = document.getElementById("layoutIncludeDanceFloor");
+  dom.layoutIncludeGiftTable = document.getElementById("layoutIncludeGiftTable");
+  dom.layoutKeepOpenBarSide = document.getElementById("layoutKeepOpenBarSide");
+  dom.generateLayoutButton = document.getElementById("generateLayoutButton");
+  dom.manualRefineButton = document.getElementById("manualRefineButton");
+  dom.manualRefinementBar = document.getElementById("manualRefinementBar");
+  dom.layoutGuestCountSummary = document.getElementById("layoutGuestCountSummary");
+  dom.layoutTableStyleSummary = document.getElementById("layoutTableStyleSummary");
+  dom.layoutServiceSummary = document.getElementById("layoutServiceSummary");
+  dom.layoutPresetName = document.getElementById("layoutPresetName");
 
   dom.assistantQuestionChips = document.getElementById("assistantQuestionChips");
   dom.assistantRelatedChips = document.getElementById("assistantRelatedChips");
@@ -309,6 +319,17 @@ function cacheDom() {
   dom.backToTop = document.getElementById("backToTop");
   dom.currentYear = document.getElementById("currentYear");
   dom.journeySteps = document.querySelectorAll(".journey-step");
+}
+
+function setupHeroImageFallback() {
+  if (!dom.heroOwnerImage) return;
+
+  dom.heroOwnerImage.addEventListener("error", () => {
+    const fallbackSrc = dom.heroOwnerImage.dataset.fallback;
+    if (fallbackSrc && dom.heroOwnerImage.src !== fallbackSrc) {
+      dom.heroOwnerImage.src = fallbackSrc;
+    }
+  });
 }
 
 function setupNavigation() {
@@ -529,99 +550,6 @@ function getEstimatorAddOnSummary() {
   return labels.length ? labels.join(", ") : "None selected";
 }
 
-function setupVisionBuilder() {
-  const updateRecommendation = () => {
-    const eventType = dom.visionEventType.value;
-    const guestRange = dom.visionGuestRange.value;
-    const atmosphere = dom.visionAtmosphere.value;
-    const ceremony = dom.visionCeremony.checked;
-    const coordination = dom.visionCoordination.checked;
-    const bartending = dom.visionBartending.checked;
-
-    let title = "Gracewood’s Friday/Sunday wedding package";
-    let summary = "Based on your selections, Gracewood’s Friday/Sunday wedding package with ceremony and day-of coordination may be the best fit for your event.";
-    let layout = "Wedding Reception Layout";
-    let price = 6000;
-    let note = "A balanced option that pairs value with an elevated guest experience.";
-
-    if (eventType === "wedding") {
-      if (guestRange === "150-200") {
-        title = "Gracewood’s Saturday wedding package";
-        price = 6500;
-        layout = ceremony ? "Ceremony + Reception Layout" : "Wedding Reception Layout";
-        note = "A strong fit for higher guest counts and a fuller celebration timeline.";
-      } else if (atmosphere === "welcoming" || guestRange === "up-to-75") {
-        title = "Gracewood’s Thursday wedding package";
-        price = 5000;
-        layout = ceremony ? "Ceremony + Reception Layout" : "Wedding Reception Layout";
-        note = "A thoughtful value-focused option for more intimate celebrations.";
-      }
-      if (ceremony) price += PRICING.wedding.ceremony;
-      if (coordination) price += PRICING.wedding.coordination;
-      if (bartending) price += PRICING.wedding.bartending;
-      summary = `Based on your selections, ${title}${ceremony ? " with ceremony" : ""}${coordination ? " and day-of coordination" : ""}${bartending ? " plus bartending" : ""} may be the best fit for your event.`;
-    } else if (eventType === "social") {
-      title = "Gracewood’s hourly social event rental";
-      price = guestRange === "150-200" ? 1500 : guestRange === "75-150" ? 1250 : 1000;
-      layout = "Shower / Social Event Layout";
-      note = "This recommendation keeps the room feeling open, welcoming, and easy to customize.";
-      summary = "Based on your selections, Gracewood’s hourly social event rental may be the best fit for your event.";
-    } else {
-      title = "Gracewood’s hourly corporate event rental";
-      price = guestRange === "150-200" ? 1750 : guestRange === "75-150" ? 1250 : 1000;
-      layout = "Corporate Event Layout";
-      note = "This recommendation supports practical circulation and a polished guest experience.";
-      summary = "Based on your selections, Gracewood’s hourly corporate event rental may be the best fit for your event.";
-    }
-
-    dom.visionRecommendation.innerHTML = `
-      <p class="recommendation-kicker">Recommended package</p>
-      <h4>${title}</h4>
-      <p>${summary}</p>
-      <ul class="recommendation-meta">
-        <li><strong>Suggested layout:</strong> ${layout}</li>
-        <li><strong>Estimated planning total:</strong> ${formatCurrency(price)}</li>
-        <li><strong>Planning note:</strong> ${note}</li>
-      </ul>
-      <button class="button button-secondary" id="applyVisionRecommendation" type="button">Apply Recommendation to My Plan</button>
-    `;
-
-    document.getElementById("applyVisionRecommendation").addEventListener("click", () => {
-      if (eventType === "wedding") {
-        dom.estimateEventType.value = "wedding";
-        if (title.includes("Saturday")) dom.estimateWeddingDay.value = "Saturday";
-        else if (title.includes("Thursday")) dom.estimateWeddingDay.value = "Thursday";
-        else dom.estimateWeddingDay.value = "Friday";
-        dom.estimateCeremony.checked = ceremony;
-        dom.estimateCoordination.checked = coordination;
-        dom.estimateBartending.checked = bartending;
-      } else {
-        dom.estimateEventType.value = eventType;
-        dom.estimateHoursRange.value = eventType === "corporate" && guestRange === "150-200" ? "7" : guestRange === "up-to-75" ? "4" : "5";
-      }
-      triggerEstimatorRefresh();
-      applyPresetByName(layout);
-      updateSavedSummary({
-        guestCount: humanizeGuestRange(guestRange),
-        preferredLayout: layout
-      });
-    });
-  };
-
-  [
-    dom.visionEventType,
-    dom.visionGuestRange,
-    dom.visionAtmosphere,
-    dom.visionCeremony,
-    dom.visionCoordination,
-    dom.visionBartending
-  ].forEach((field) => {
-    field.addEventListener("change", updateRecommendation);
-  });
-
-  updateRecommendation();
-}
-
 function triggerEstimatorRefresh() {
   dom.estimateEventType.dispatchEvent(new Event("change"));
 }
@@ -649,10 +577,27 @@ function setupLayoutPlanner() {
   });
   window.addEventListener("afterprint", clearPrintMode);
   window.addEventListener("resize", clampAllLayoutItemsToCanvas);
+
+  if (dom.layoutGeneratorForm) {
+    dom.layoutGeneratorForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      generateLayoutFromInputs();
+    });
+  }
+
+  if (dom.manualRefineButton && dom.manualRefinementBar) {
+    dom.manualRefineButton.addEventListener("click", () => {
+      dom.manualRefinementBar.classList.toggle("is-open");
+      dom.manualRefineButton.textContent = dom.manualRefinementBar.classList.contains("is-open")
+        ? "Hide Manual Refinements"
+        : "Show Manual Refinements";
+    });
+  }
+
   if (dom.plannerGuideAction) {
     dom.plannerGuideAction.addEventListener("click", () => {
       if (!state.layoutItems.length) {
-        applyPreset("wedding-reception");
+        generateLayoutFromInputs();
       } else {
         toggleSummaryDrawer(true);
       }
@@ -660,6 +605,108 @@ function setupLayoutPlanner() {
   }
   renderLayoutItems();
   updateLayoutSummary();
+}
+
+function syncLayoutPreferencesFromInputs() {
+  if (!dom.layoutEventType) return;
+
+  state.layoutPreferences = {
+    eventType: dom.layoutEventType.value,
+    guestCount: clamp(Number(dom.layoutGuestCount.value) || 120, 20, 200),
+    tableStyle: dom.layoutTableStyle.value,
+    headStyle: dom.layoutHeadStyle.value,
+    includeCeremony: dom.layoutIncludeCeremony.checked,
+    includeBuffet: dom.layoutIncludeBuffet.checked,
+    includeCookieTable: dom.layoutIncludeCookieTable.checked,
+    includeDanceFloor: dom.layoutIncludeDanceFloor.checked,
+    includeGiftTable: dom.layoutIncludeGiftTable.checked,
+    keepOpenBarSide: dom.layoutKeepOpenBarSide.checked
+  };
+
+  dom.layoutGuestCount.value = String(state.layoutPreferences.guestCount);
+}
+
+function generateLayoutFromInputs() {
+  syncLayoutPreferencesFromInputs();
+  state.layoutItems = [];
+  state.activeLayoutPreset = "Custom Generated Layout";
+
+  const preferences = state.layoutPreferences;
+  const seatsNeeded = preferences.guestCount;
+  let remainingSeats = seatsNeeded;
+
+  const addItem = (type, x, y, labelOverride = "") => {
+    addLayoutItem(type, x, y, labelOverride);
+    remainingSeats = Math.max(0, remainingSeats - (itemConfig[type]?.seats || 0));
+  };
+
+  if (preferences.includeCeremony && preferences.eventType === "wedding") {
+    addItem("altar", 76, 58, "Ceremony Focus");
+    [122, 160, 198, 236].forEach((y) => addItem("ceremonyRow", 44, y));
+  }
+
+  if (preferences.headStyle === "head") {
+    addItem("head", 436, preferences.includeCeremony ? 62 : 48);
+  } else if (preferences.headStyle === "sweetheart") {
+    addItem("sweetheart", 468, preferences.includeCeremony ? 66 : 54);
+  }
+
+  if (preferences.includeDanceFloor) {
+    addItem("dance", preferences.tableStyle === "banquet" ? 242 : 188, preferences.includeCeremony ? 168 : 154);
+  }
+
+  if (preferences.includeGiftTable) {
+    addItem("gift", 402, 306);
+  }
+
+  if (preferences.includeCookieTable) {
+    addItem("cookie", 512, 308, "Cookie Table");
+  }
+
+  if (preferences.includeBuffet) {
+    addItem("buffet", preferences.keepOpenBarSide ? 398 : 510, 110, "Buffet");
+  }
+
+  const roundPositions = [
+    [60, 52], [178, 52], [296, 52],
+    [60, 188], [178, 188], [296, 188],
+    [60, 288], [178, 288], [296, 288],
+    [520, 182], [520, 284], [406, 206], [406, 300]
+  ];
+
+  const banquetPositions = [
+    [76, 88], [228, 88], [76, 168], [228, 168],
+    [76, 248], [228, 248], [430, 200], [430, 280]
+  ];
+
+  const mixedOrder = [
+    { type: "round", x: 66, y: 60 },
+    { type: "round", x: 190, y: 60 },
+    { type: "banquet", x: 72, y: 186 },
+    { type: "banquet", x: 228, y: 186 },
+    { type: "round", x: 68, y: 292 },
+    { type: "round", x: 198, y: 292 },
+    { type: "banquet", x: 422, y: 216 },
+    { type: "round", x: 528, y: 270 }
+  ];
+
+  if (preferences.tableStyle === "round") {
+    roundPositions.forEach(([x, y]) => {
+      if (remainingSeats > 0) addItem("round", x, y);
+    });
+  } else if (preferences.tableStyle === "banquet") {
+    banquetPositions.forEach(([x, y]) => {
+      if (remainingSeats > 0) addItem("banquet", x, y);
+    });
+  } else {
+    mixedOrder.forEach((entry) => {
+      if (remainingSeats > 0) addItem(entry.type, entry.x, entry.y);
+    });
+  }
+
+  clampAllLayoutItemsToCanvas();
+  updateLayoutSummary();
+  markJourneyStep("layout", true);
 }
 
 function addLayoutItem(type, x = 28, y = 28, labelOverride = "") {
@@ -867,6 +914,25 @@ function updateLayoutSummary() {
   if (dom.totalSeatingCount) dom.totalSeatingCount.textContent = String(counts.seating);
   if (dom.danceFloorStatus) dom.danceFloorStatus.textContent = counts.dance ? "Yes" : "No";
   if (dom.headTableStatus) dom.headTableStatus.textContent = counts.headOrSweetheart ? "Yes" : "No";
+  if (dom.layoutGuestCountSummary) dom.layoutGuestCountSummary.textContent = `${state.layoutPreferences.guestCount} guests`;
+  if (dom.layoutTableStyleSummary) {
+    const tableStyleLabels = {
+      round: "Mostly round tables",
+      banquet: "Mostly long tables",
+      mixed: "Balanced mix"
+    };
+    dom.layoutTableStyleSummary.textContent = tableStyleLabels[state.layoutPreferences.tableStyle] || "Custom";
+  }
+  if (dom.layoutServiceSummary) {
+    const serviceLabels = [];
+    if (state.layoutPreferences.includeCeremony) serviceLabels.push("Ceremony");
+    if (state.layoutPreferences.includeBuffet) serviceLabels.push("Buffet");
+    if (state.layoutPreferences.includeCookieTable) serviceLabels.push("Cookie table");
+    if (state.layoutPreferences.includeGiftTable) serviceLabels.push("Gift table");
+    if (state.layoutPreferences.includeDanceFloor) serviceLabels.push("Dance floor");
+    dom.layoutServiceSummary.textContent = serviceLabels.length ? serviceLabels.join(", ") : "None selected";
+  }
+  if (dom.layoutPresetName) dom.layoutPresetName.textContent = state.activeLayoutPreset || "Not started";
   if (dom.layoutDensity) {
     dom.layoutDensity.textContent =
       counts.seating >= 140 ? "High" : counts.seating >= 64 ? "Balanced" : counts.seating > 0 ? "Open" : "Not started";

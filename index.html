@@ -148,36 +148,6 @@
         </div>
       </section>
 
-      <section class="section photo-story-section reveal">
-        <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">Atmosphere & Setting</p>
-            <h2>A softer, more colorful first impression.</h2>
-            <p>Natural greenery, warm light, and layered texture help Gracewood feel elevated without feeling formal or distant.</p>
-          </div>
-          <div class="photo-story-grid">
-            <article class="photo-story-card photo-story-greenery">
-              <div class="photo-story-overlay">
-                <span>Natural warmth</span>
-                <h3>Greenery, soft light, and organic surroundings inspire the tone.</h3>
-              </div>
-            </article>
-            <article class="photo-story-card photo-story-reception">
-              <div class="photo-story-overlay">
-                <span>Wedding vision</span>
-                <h3>Elegant receptions should feel polished, calm, and comfortable to host.</h3>
-              </div>
-            </article>
-            <article class="photo-story-card photo-story-detail">
-              <div class="photo-story-overlay">
-                <span>Approachable luxury</span>
-                <h3>Gracewood is meant to feel elevated, welcoming, and easy to personalize.</h3>
-              </div>
-            </article>
-          </div>
-        </div>
-      </section>
-
       <section class="section amenities-section reveal">
         <div class="container">
           <div class="section-heading">
@@ -231,71 +201,6 @@
                 Build confidence with thoughtful planning support, package guidance, layout ideas, and day-of coordination options that help the experience feel organized from the start.
               </p>
               <a href="#coordination" class="inline-link">See planning support</a>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section difference-section reveal">
-        <div class="container difference-grid">
-          <div class="section-heading left">
-            <p class="eyebrow">More Than a Venue</p>
-            <h2>More Than a Venue</h2>
-            <p>
-              Gracewood is designed to make planning easier. Instead of simply browsing photos and sending a generic inquiry, guests can explore availability, review pricing, estimate their package, and begin visualizing their event experience in one place. The result is a more confident, modern, and client-friendly planning journey.
-            </p>
-            <div class="difference-cta-row">
-              <a href="#tools" class="button button-primary small">Plan Your Layout</a>
-              <a href="#contact" class="button button-secondary small">Start Your Inquiry</a>
-            </div>
-          </div>
-          <div class="difference-points">
-            <article>
-              <h3>Clear availability</h3>
-              <p>See open, booked, and pending dates instantly with a polished calendar.</p>
-            </article>
-            <article>
-              <h3>Transparent package planning</h3>
-              <p>Move from curiosity to realistic pricing in a few clicks.</p>
-            </article>
-            <article>
-              <h3>Layout visualization</h3>
-              <p>Preview your event flow inside a venue-inspired floor plan before you inquire.</p>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section journey-section reveal">
-        <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">Personalized Planning Journey</p>
-            <h2>A guided path from date check to inquiry.</h2>
-          </div>
-          <div class="journey-grid" id="journeyGrid">
-            <article class="journey-step" data-step="date">
-              <span class="step-number">Step 1</span>
-              <h3>Check your date</h3>
-              <p>Browse the calendar to review availability, pending inquiries, and booked celebrations.</p>
-              <span class="step-status">Waiting</span>
-            </article>
-            <article class="journey-step" data-step="packages">
-              <span class="step-number">Step 2</span>
-              <h3>Explore packages</h3>
-              <p>Compare wedding options, hourly rental pricing, and helpful add-ons with clarity.</p>
-              <span class="step-status">Waiting</span>
-            </article>
-            <article class="journey-step" data-step="layout">
-              <span class="step-number">Step 3</span>
-              <h3>Build your layout</h3>
-              <p>Use presets or place tables manually to picture guest flow inside the main event space.</p>
-              <span class="step-status">Waiting</span>
-            </article>
-            <article class="journey-step" data-step="inquiry">
-              <span class="step-number">Step 4</span>
-              <h3>Send your inquiry</h3>
-              <p>Submit a polished front-end inquiry and carry forward the details you have already chosen.</p>
-              <span class="step-status">Waiting</span>
             </article>
           </div>
         </div>
@@ -476,8 +381,8 @@
             <article class="tool-card estimator-card">
               <div class="tool-card-header">
                 <div>
-                  <p class="eyebrow">Live Pricing Estimator</p>
-                  <h3>Build your package in real time.</h3>
+                  <p class="eyebrow">Build Your Package</p>
+                  <h3>Build your package and planning direction in one place.</h3>
                 </div>
                 <a href="#contact" class="text-button">Start Your Inquiry</a>
               </div>
@@ -558,70 +463,11 @@
                 <p class="policy-note subtle">
                   For weddings, bartending is exclusively provided through Gibsonia Bar Tending Service so the venue experience stays consistent and straightforward for clients and guests.
                 </p>
-              </div>
-            </article>
-
-            <article class="tool-card vision-card">
-              <div class="tool-card-header">
-                <div>
-                  <p class="eyebrow">Event Vision Builder</p>
-                  <h3>Turn preferences into a recommended plan.</h3>
+                <div class="planner-bridge-card">
+                  <h4>Recommended next step</h4>
+                  <p id="packageRecommendationText">After you choose your package, Gracewood can generate a room layout that fits your guest count and table style.</p>
+                  <button class="button button-secondary" id="applyPackageToLayout" type="button">Use This in My Layout</button>
                 </div>
-              </div>
-              <form id="visionBuilderForm" class="vision-form">
-                <div class="field-grid">
-                  <label>
-                    Event type
-                    <select id="visionEventType">
-                      <option value="wedding">Wedding</option>
-                      <option value="social">Social Event</option>
-                      <option value="corporate">Corporate Event</option>
-                    </select>
-                  </label>
-                  <label>
-                    Guest count range
-                    <select id="visionGuestRange">
-                      <option value="up-to-75">Up to 75 guests</option>
-                      <option value="75-150">75 to 150 guests</option>
-                      <option value="150-200">150 to 200 guests</option>
-                    </select>
-                  </label>
-                  <label>
-                    Desired atmosphere
-                    <select id="visionAtmosphere">
-                      <option value="elevated">Elevated and timeless</option>
-                      <option value="airy">Airy and romantic</option>
-                      <option value="welcoming">Warm and welcoming</option>
-                      <option value="professional">Professional and polished</option>
-                    </select>
-                  </label>
-                </div>
-                <div class="toggle-grid compact">
-                  <label class="toggle-card">
-                    <input type="checkbox" id="visionCeremony">
-                    <span>Include ceremony</span>
-                  </label>
-                  <label class="toggle-card">
-                    <input type="checkbox" id="visionCoordination">
-                    <span>Include coordination</span>
-                  </label>
-                  <label class="toggle-card">
-                    <input type="checkbox" id="visionBartending">
-                    <span>Include bartending</span>
-                  </label>
-                </div>
-              </form>
-
-              <div class="vision-recommendation" id="visionRecommendation">
-                <p class="recommendation-kicker">Recommended package</p>
-                <h4>Gracewood’s Friday/Sunday wedding package</h4>
-                <p>Based on your selections, Gracewood’s Friday/Sunday wedding package with ceremony and day-of coordination may be the best fit for your event.</p>
-                <ul class="recommendation-meta">
-                  <li><strong>Suggested layout:</strong> Wedding Reception Layout</li>
-                  <li><strong>Estimated planning total:</strong> $8,000</li>
-                  <li><strong>Planning note:</strong> A balanced option that pairs value with an elevated guest experience.</li>
-                </ul>
-                <button class="button button-secondary" id="applyVisionRecommendation" type="button">Apply Recommendation to My Plan</button>
               </div>
             </article>
           </div>
@@ -630,9 +476,9 @@
             <article class="tool-card layout-card">
               <div class="tool-card-header">
                 <div>
-                  <p class="eyebrow">Gracewood Layout Assistant</p>
-                  <h3>Generate a smarter room layout from your event details.</h3>
-                  <p class="tool-card-subnote">Start with guest count, table style, and service elements, then let Gracewood generate a cleaner floor plan you can still refine manually.</p>
+                  <p class="eyebrow">Build Your Layout</p>
+                  <h3>Generate a room plan that actually fits your event.</h3>
+                  <p class="tool-card-subnote">Choose your guest count, table style, and service elements. Gracewood will arrange the room to fit the space and your event needs automatically.</p>
                 </div>
                 <div class="planner-actions">
                   <button class="button button-secondary small" id="resetLayoutButton" type="button">Reset Layout</button>
@@ -675,6 +521,23 @@
                             <option value="none">No dedicated head table</option>
                           </select>
                         </label>
+                        <label>
+                          Dance floor
+                          <select id="layoutDanceFloorSize">
+                            <option value="standard">Standard dance floor</option>
+                            <option value="large">Larger dance floor</option>
+                            <option value="none">No dance floor</option>
+                          </select>
+                        </label>
+                        <label>
+                          Dessert / sweets
+                          <select id="layoutDessertStyle">
+                            <option value="cookie">Cookie table</option>
+                            <option value="dessert">Dessert table</option>
+                            <option value="both">Both cookie and dessert tables</option>
+                            <option value="none">No sweets display</option>
+                          </select>
+                        </label>
                       </div>
 
                       <div class="toggle-grid compact layout-generator-toggles">
@@ -689,10 +552,6 @@
                         <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeCookieTable" checked>
                           <span>Include cookie table</span>
-                        </label>
-                        <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeDanceFloor" checked>
-                          <span>Include dance floor</span>
                         </label>
                         <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeGiftTable" checked>
@@ -717,9 +576,9 @@
                       <li>Guest count translated into round, long, or mixed table groupings</li>
                       <li>Open circulation from the main entrance into the event floor</li>
                       <li>Room access to the kitchen/bar side, bridal suite, and restrooms</li>
-                      <li>Optional buffet, cookie table, gift table, and ceremony setup</li>
+                      <li>Buffet, sweets tables, gift table, head table, and ceremony setup placed where they naturally fit</li>
                     </ul>
-                    <p class="planner-helper-copy">After the room is generated, you can still drag pieces around and make smaller manual adjustments.</p>
+                    <p class="planner-helper-copy">After the room is generated, you can still drag pieces around and make smaller manual adjustments if you want to fine-tune it.</p>
                   </div>
                 </div>
 
@@ -845,47 +704,6 @@
         </div>
       </section>
 
-      <section class="section comparison-section reveal">
-        <div class="container">
-          <div class="section-heading">
-            <p class="eyebrow">Why Gracewood</p>
-            <h2>An elegant alternative to a typical venue website.</h2>
-          </div>
-          <div class="comparison-table">
-            <div class="comparison-head">
-              <span>Experience</span>
-              <span>Typical venue websites</span>
-              <span>Gracewood</span>
-            </div>
-            <div class="comparison-row">
-              <span>Availability</span>
-              <span>Often requires a generic inquiry first</span>
-              <span>Clear status calendar with booked, pending, and available dates</span>
-            </div>
-            <div class="comparison-row">
-              <span>Pricing</span>
-              <span>Limited detail or hidden ranges</span>
-              <span>Transparent package information and live estimation tools</span>
-            </div>
-            <div class="comparison-row">
-              <span>Planning tools</span>
-              <span>Mostly gallery-driven browsing</span>
-              <span>Interactive estimator, layout preview, assistant help, and saved summary</span>
-            </div>
-            <div class="comparison-row">
-              <span>Event flexibility</span>
-              <span>Messaging may feel narrow or generic</span>
-              <span>Thoughtfully tailored for weddings, social events, and corporate gatherings</span>
-            </div>
-            <div class="comparison-row">
-              <span>Client guidance</span>
-              <span>Little practical next-step support</span>
-              <span>Personalized planning journey with organized decision points</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section class="section events-section reveal" id="events">
         <div class="container">
           <div class="section-heading">
@@ -952,55 +770,14 @@
         </div>
       </section>
 
-      <section class="section testimonial-section reveal">
+      <section class="section about-section reveal" id="about">
         <div class="container">
           <div class="section-heading">
-            <p class="eyebrow">Client Perspective</p>
-            <h2>Testimonial-style previews of the experience Gracewood is built to deliver.</h2>
-          </div>
-          <div class="testimonial-grid">
-            <article class="testimonial-card">
-              <p>“The planning tools helped us understand availability, layout, and pricing before we even reached out. It felt organized from the very start.”</p>
-              <span>Future wedding couple perspective</span>
-            </article>
-            <article class="testimonial-card">
-              <p>“Gracewood feels polished and warm at the same time. It made it easy to imagine a shower that was beautiful without feeling overcomplicated.”</p>
-              <span>Future social event host perspective</span>
-            </article>
-            <article class="testimonial-card">
-              <p>“The venue feels approachable but elevated, and the planning flow is much clearer than a standard event website.”</p>
-              <span>Future corporate client perspective</span>
-            </article>
-          </div>
-        </div>
-      </section>
-
-      <section class="section about-section reveal" id="about">
-        <div class="container about-grid">
-          <div class="section-heading left">
             <p class="eyebrow">About Gracewood</p>
             <h2>About Gracewood</h2>
-          </div>
-          <div class="about-copy">
             <p>
-              Gracewood is a venue created for meaningful celebrations in the Pittsburgh region. Our vision is to provide a space that feels beautiful, flexible, and approachable for weddings, showers, parties, fundraisers, corporate gatherings, and other memorable occasions.
+              Gracewood, part of Harshbarger Events, is a welcoming event venue in the Pittsburgh region created for weddings, social gatherings, and corporate events. Our goal is to offer a beautiful, flexible space with clearer pricing, thoughtful planning support, and an easier path from first visit to confident inquiry.
             </p>
-            <p>
-              We believe every event is unique. Our approach is rooted in communication, customization, and helping clients feel supported from the first inquiry through the event itself. We want every host to feel confident that their vision can come to life here.
-            </p>
-            <p>
-              At Gracewood, our goal is simple: provide a refined event setting, an organized planning experience, and a welcoming atmosphere that helps every celebration feel exceptional.
-            </p>
-            <div class="about-detail-grid">
-              <article>
-                <h3>Mission</h3>
-                <p>Our mission is to serve the community by providing a unique and versatile event space for meaningful celebrations. We aim to exceed expectations through communication, flexibility, and personalized planning support.</p>
-              </article>
-              <article>
-                <h3>Positioning</h3>
-                <p>Community-oriented, customizable, polished, client-focused, welcoming, and elevated but approachable.</p>
-              </article>
-            </div>
           </div>
         </div>
       </section>
