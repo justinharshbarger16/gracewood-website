@@ -862,11 +862,11 @@ function updateLayoutSummary() {
     counts.seating += item.seats;
   });
 
-  dom.roundTableCount.textContent = String(counts.round);
-  dom.banquetTableCount.textContent = String(counts.banquet);
-  dom.totalSeatingCount.textContent = String(counts.seating);
-  dom.danceFloorStatus.textContent = counts.dance ? "Yes" : "No";
-  dom.headTableStatus.textContent = counts.headOrSweetheart ? "Yes" : "No";
+  if (dom.roundTableCount) dom.roundTableCount.textContent = String(counts.round);
+  if (dom.banquetTableCount) dom.banquetTableCount.textContent = String(counts.banquet);
+  if (dom.totalSeatingCount) dom.totalSeatingCount.textContent = String(counts.seating);
+  if (dom.danceFloorStatus) dom.danceFloorStatus.textContent = counts.dance ? "Yes" : "No";
+  if (dom.headTableStatus) dom.headTableStatus.textContent = counts.headOrSweetheart ? "Yes" : "No";
   if (dom.layoutDensity) {
     dom.layoutDensity.textContent =
       counts.seating >= 140 ? "High" : counts.seating >= 64 ? "Balanced" : counts.seating > 0 ? "Open" : "Not started";
@@ -880,11 +880,13 @@ function updateLayoutSummary() {
           : "Select a preset to begin";
   }
 
-  dom.plannerTips.innerHTML = `
-    <li>Maintain a clear path from the Main Entrance into the center of the Main Event Space.</li>
-    <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts and keep the right-side service path open." : "Leave open space for mingling and transitions, especially near the lower entrance edge."}</li>
-    <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}. Keep kitchen/bar access open along the upper-right edge.` : "Choose a preset for a faster starting point and then fine-tune tables around the main focal zone."}</li>
-  `;
+  if (dom.plannerTips) {
+    dom.plannerTips.innerHTML = `
+      <li>Maintain a clear path from the Main Entrance into the center of the Main Event Space.</li>
+      <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts and keep the right-side service path open." : "Leave open space for mingling and transitions, especially near the lower entrance edge."}</li>
+      <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}. Keep kitchen/bar access open along the upper-right edge.` : "Choose a preset for a faster starting point and then fine-tune tables around the main focal zone."}</li>
+    `;
+  }
 
   if (dom.plannerGuideText && dom.plannerGuideAction) {
     if (!state.layoutItems.length) {
