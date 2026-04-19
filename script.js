@@ -267,7 +267,7 @@ function cacheDom() {
   dom.layoutCateringStyle = document.getElementById("layoutCateringStyle");
   dom.layoutIncludeCeremony = document.getElementById("layoutIncludeCeremony");
   dom.layoutIncludeDanceFloor = document.getElementById("layoutIncludeDanceFloor");
-  dom.layoutIncludeSweetheart = document.getElementById("layoutIncludeSweetheart");
+  dom.layoutHeadStyle = document.getElementById("layoutHeadStyle");
   dom.layoutGuestCountSummary = document.getElementById("layoutGuestCountSummary");
   dom.layoutTableStyleSummary = document.getElementById("layoutTableStyleSummary");
   dom.layoutServiceSummary = document.getElementById("layoutServiceSummary");
