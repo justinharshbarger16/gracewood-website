@@ -91,7 +91,7 @@
                 <span class="planning-step">03</span>
                 <div>
                   <h3>Generate your room</h3>
-                  <p>Use the smarter layout assistant to visualize guest flow more naturally.</p>
+                  <p>Use the layout generator to build a room plan around your guest count and table style.</p>
                 </div>
               </a>
             </div>
@@ -516,19 +516,10 @@
                           </select>
                         </label>
                         <label>
-                          Layout style
-                          <select id="layoutMode">
-                            <option value="reception">Reception layout</option>
-                            <option value="ceremony-reception">Ceremony + reception layout</option>
-                            <option value="social">Social / shower layout</option>
-                            <option value="corporate">Corporate layout</option>
-                          </select>
-                        </label>
-                        <label>
-                          DJ area
-                          <select id="layoutDjPlacement">
-                            <option value="top-left">Top-left near dance floor</option>
-                            <option value="left-wall">Left wall</option>
+                          Catering style
+                          <select id="layoutCateringStyle">
+                            <option value="plated">Plated</option>
+                            <option value="buffet">Buffet</option>
                           </select>
                         </label>
                       </div>
@@ -539,28 +530,20 @@
                           <span>Include ceremony setup</span>
                         </label>
                         <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeBuffet">
-                          <span>Include buffet</span>
-                        </label>
-                        <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeCookieTable" checked>
                           <span>Include cookie table</span>
-                        </label>
-                        <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeGiftTable" checked>
-                          <span>Include gift table</span>
                         </label>
                         <label class="toggle-card">
                           <input type="checkbox" id="layoutIncludeDanceFloor" checked>
                           <span>Keep dance floor</span>
                         </label>
                         <label class="toggle-card">
-                          <input type="checkbox" id="layoutIncludeDj" checked>
-                          <span>Include DJ area</span>
+                          <input type="checkbox" id="layoutIncludeGiftTable" checked>
+                          <span>Include gift table</span>
                         </label>
                         <label class="toggle-card">
-                          <input type="checkbox" id="layoutKeepOpenBarSide" checked>
-                          <span>Keep kitchen/bar side more open</span>
+                          <input type="checkbox" id="layoutIncludeBuffet">
+                          <span>Include buffet setup</span>
                         </label>
                       </div>
 
@@ -574,10 +557,10 @@
                   <div class="planner-control-group planner-logic-card">
                     <h4>What the layout generator considers</h4>
                     <ul class="planner-logic-list">
-                      <li>Guest count translated into round, long, or mixed table groupings</li>
+                      <li>Guest count translated into the exact number of round or long tables required</li>
                       <li>Open circulation from the main entrance into the event floor</li>
                       <li>Room access to the kitchen/bar side, bridal suite, and restrooms</li>
-                      <li>Buffet, sweets tables, gift table, sweetheart/head table, DJ, and ceremony setup placed where they naturally fit</li>
+                      <li>Buffet, cookie table, sweetheart table, and ceremony setup placed where they naturally fit</li>
                     </ul>
                     <p class="planner-helper-copy">After the room is generated, you can still drag pieces around and make smaller manual adjustments if you want to fine-tune it.</p>
                   </div>
@@ -594,7 +577,6 @@
                     <button type="button" class="control-chip" data-item-type="sweetheart">Sweetheart Table</button>
                     <button type="button" class="control-chip" data-item-type="head">Head Table</button>
                     <button type="button" class="control-chip" data-item-type="dance">Dance Floor</button>
-                    <button type="button" class="control-chip" data-item-type="dj">DJ</button>
                     <button type="button" class="control-chip" data-item-type="gift">Gift Table</button>
                     <button type="button" class="control-chip" data-item-type="dessert">Dessert Table</button>
                     <button type="button" class="control-chip" data-item-type="buffet">Buffet</button>
@@ -648,7 +630,7 @@
                 <div><span>Total estimated seating</span><strong id="totalSeatingCount">0</strong></div>
                 <div><span>Layout density</span><strong id="layoutDensity">Not started</strong></div>
                 <div><span>Service elements</span><strong id="layoutServiceSummary">None selected</strong></div>
-                <div><span>Head table / focal setup</span><strong id="headTableStatus">No</strong></div>
+                <div><span>Sweetheart / focal setup</span><strong id="headTableStatus">No</strong></div>
                 <div><span>Preferred layout</span><strong id="layoutPresetName">Not started</strong></div>
                 <div><span>Flow note</span><strong id="layoutFlow">Select your planning inputs</strong></div>
               </div>

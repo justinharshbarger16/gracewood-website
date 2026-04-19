@@ -16,7 +16,8 @@ const state = {
     includeCookieTable: true,
     includeDanceFloor: true,
     includeGiftTable: true,
-    keepOpenBarSide: true
+    keepOpenBarSide: true,
+    cateringStyle: "buffet"
   },
   estimate: {
     eventType: "wedding",
@@ -267,13 +268,11 @@ function cacheDom() {
   dom.layoutEventType = document.getElementById("layoutEventType");
   dom.layoutGuestCount = document.getElementById("layoutGuestCount");
   dom.layoutTableStyle = document.getElementById("layoutTableStyle");
-  dom.layoutHeadStyle = document.getElementById("layoutHeadStyle");
+  dom.layoutCateringStyle = document.getElementById("layoutCateringStyle");
   dom.layoutIncludeCeremony = document.getElementById("layoutIncludeCeremony");
   dom.layoutIncludeBuffet = document.getElementById("layoutIncludeBuffet");
-  dom.layoutIncludeCookieTable = document.getElementById("layoutIncludeCookieTable");
   dom.layoutIncludeDanceFloor = document.getElementById("layoutIncludeDanceFloor");
-  dom.layoutIncludeGiftTable = document.getElementById("layoutIncludeGiftTable");
-  dom.layoutKeepOpenBarSide = document.getElementById("layoutKeepOpenBarSide");
+  dom.layoutIncludeSweetheart = document.getElementById("layoutIncludeSweetheart");
   dom.generateLayoutButton = document.getElementById("generateLayoutButton");
   dom.manualRefineButton = document.getElementById("manualRefineButton");
   dom.manualRefinementBar = document.getElementById("manualRefinementBar");
@@ -614,71 +613,71 @@ function syncLayoutPreferencesFromInputs() {
     eventType: dom.layoutEventType.value,
     guestCount: clamp(Number(dom.layoutGuestCount.value) || 120, 20, 200),
     tableStyle: dom.layoutTableStyle.value,
-    headStyle: dom.layoutHeadStyle.value,
+    cateringStyle: dom.layoutCateringStyle.value,
+    headStyle: dom.layoutIncludeSweetheart.checked ? "sweetheart" : "none",
     includeCeremony: dom.layoutIncludeCeremony.checked,
-    includeBuffet: dom.layoutIncludeBuffet.checked,
-    includeCookieTable: dom.layoutIncludeCookieTable.checked,
+    includeBuffet: dom.layoutCateringStyle.value === "buffet",
+    includeCookieTable: true,
     includeDanceFloor: dom.layoutIncludeDanceFloor.checked,
-    includeGiftTable: dom.layoutIncludeGiftTable.checked,
-    keepOpenBarSide: dom.layoutKeepOpenBarSide.checked
+    includeGiftTable: true,
+    keepOpenBarSide: true
   };
 
   dom.layoutGuestCount.value = String(state.layoutPreferences.guestCount);
 }
 
-function generateLayoutFromInputs() {
-  syncLayoutPreferencesFromInputs();
+function calculateTableCount(guestCount) {
+  return Math.ceil(guestCount / 8);
+}
+
+function clearExistingLayout() {
   state.layoutItems = [];
-  state.activeLayoutPreset = "Custom Generated Layout";
+}
 
-  const preferences = state.layoutPreferences;
-  const seatsNeeded = preferences.guestCount;
-  let remainingSeats = seatsNeeded;
+function placeSweetheartTable(addItem) {
+  addItem("sweetheart", 154, 468);
+}
 
-  const addItem = (type, x, y, labelOverride = "") => {
-    addLayoutItem(type, x, y, labelOverride);
-    remainingSeats = Math.max(0, remainingSeats - (itemConfig[type]?.seats || 0));
-  };
+function placeDanceFloor(addItem) {
+  addItem("dance", 98, 202);
+}
 
-  if (preferences.includeCeremony && preferences.eventType === "wedding") {
-    addItem("altar", 76, 58, "Ceremony Focus");
-    [122, 160, 198, 236].forEach((y) => addItem("ceremonyRow", 44, y));
+function placeBuffetTables(addItem) {
+  addItem("buffet", 266, 220, "Buffet");
+}
+
+function placeSupportTables(addItem, preferences) {
+  addItem("gift", 44, 470);
+  addItem("cookie", 236, 470, "Cookie Table");
+
+  if (preferences.cateringStyle === "buffet") {
+    placeBuffetTables(addItem);
   }
+}
 
-  if (preferences.headStyle === "head") {
-    addItem("head", 78, 468);
-  } else if (preferences.headStyle === "sweetheart") {
-    addItem("sweetheart", 154, 468);
-  }
-
-  if (preferences.includeDanceFloor) {
-    addItem("dance", 98, 202);
-  }
-
-  if (preferences.includeGiftTable) {
-    addItem("gift", 44, 470);
-  }
-
-  if (preferences.includeCookieTable) {
-    addItem("cookie", 236, 470, "Cookie Table");
-  }
-
-  if (preferences.includeBuffet) {
-    addItem("buffet", 266, 220, "Buffet");
-  }
-
-  const roundPositions = [
+function generateRoundTableLayout(tableCount) {
+  const positions = [
     [42, 44], [170, 44], [298, 44], [426, 44],
     [42, 146], [170, 146], [298, 146], [426, 146],
-    [42, 342], [170, 342], [298, 342], [426, 342]
+    [42, 342], [170, 342], [298, 342], [426, 342],
+    [42, 444], [170, 444], [298, 444], [426, 444],
+    [554, 146], [554, 250], [554, 354], [554, 458]
   ];
+  return positions.slice(0, tableCount).map(([x, y]) => ({ type: "round", x, y }));
+}
 
-  const banquetPositions = [
+function generateBanquetLayout(tableCount) {
+  const positions = [
     [28, 28], [28, 96], [28, 164],
     [254, 188], [254, 256],
-    [28, 368], [28, 436]
+    [28, 368], [28, 436],
+    [254, 28], [254, 96], [254, 368], [254, 436],
+    [470, 28], [470, 96], [470, 368], [470, 436]
   ];
+  return positions.slice(0, tableCount).map(([x, y]) => ({ type: "banquet", x, y }));
+}
 
+function generateMixedLayout(tableCount) {
   const mixedOrder = [
     { type: "banquet", x: 28, y: 28 },
     { type: "banquet", x: 28, y: 96 },
@@ -687,22 +686,50 @@ function generateLayoutFromInputs() {
     { type: "round", x: 300, y: 352 },
     { type: "round", x: 426, y: 352 },
     { type: "banquet", x: 28, y: 368 },
-    { type: "banquet", x: 28, y: 436 }
+    { type: "banquet", x: 28, y: 436 },
+    { type: "round", x: 554, y: 146 },
+    { type: "round", x: 554, y: 354 }
   ];
+  return mixedOrder.slice(0, tableCount);
+}
 
-  if (preferences.tableStyle === "round") {
-    roundPositions.forEach(([x, y]) => {
-      if (remainingSeats > 0) addItem("round", x, y);
-    });
-  } else if (preferences.tableStyle === "banquet") {
-    banquetPositions.forEach(([x, y]) => {
-      if (remainingSeats > 0) addItem("banquet", x, y);
-    });
-  } else {
-    mixedOrder.forEach((entry) => {
-      if (remainingSeats > 0) addItem(entry.type, entry.x, entry.y);
-    });
+function renderLayout(items) {
+  items.forEach((item) => addLayoutItem(item.type, item.x, item.y, item.label || ""));
+}
+
+function generateLayoutFromInputs() {
+  syncLayoutPreferencesFromInputs();
+  clearExistingLayout();
+  state.activeLayoutPreset = "Custom Generated Layout";
+
+  const preferences = state.layoutPreferences;
+  const tableCount = calculateTableCount(preferences.guestCount);
+
+  const addItem = (type, x, y, labelOverride = "") => {
+    addLayoutItem(type, x, y, labelOverride);
+  };
+
+  if (preferences.includeCeremony && preferences.eventType === "wedding") {
+    addItem("altar", 76, 58, "Ceremony Focus");
+    [122, 160, 198, 236].forEach((y) => addItem("ceremonyRow", 44, y));
   }
+
+  if (preferences.headStyle === "sweetheart") placeSweetheartTable(addItem);
+
+  if (preferences.includeDanceFloor) placeDanceFloor(addItem);
+
+  placeSupportTables(addItem, preferences);
+
+  let layoutItems = [];
+  if (preferences.tableStyle === "round") {
+    layoutItems = generateRoundTableLayout(tableCount);
+  } else if (preferences.tableStyle === "banquet") {
+    layoutItems = generateBanquetLayout(tableCount);
+  } else {
+    layoutItems = generateMixedLayout(tableCount);
+  }
+
+  renderLayout(layoutItems);
 
   clampAllLayoutItemsToCanvas();
   updateLayoutSummary();

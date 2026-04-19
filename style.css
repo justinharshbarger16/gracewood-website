@@ -548,9 +548,9 @@ label {
 }
 
 .hero-copy h1 {
-  font-size: clamp(1.9rem, 3.4vw, 2.7rem);
-  line-height: 1.08;
-  max-width: 13ch;
+  font-size: clamp(1.65rem, 2.9vw, 2.3rem);
+  line-height: 1.12;
+  max-width: 15ch;
 }
 
 .hero-editorial-note {
@@ -1304,8 +1304,8 @@ label {
 .layout-planner-wrap {
   margin-top: 1.25rem;
   display: grid;
-  grid-template-columns: minmax(0, 1.42fr) minmax(260px, 0.58fr);
-  gap: 1.25rem;
+  grid-template-columns: minmax(0, 1.18fr) minmax(300px, 0.82fr);
+  gap: 1.1rem;
   align-items: start;
 }
 
@@ -1621,7 +1621,7 @@ label {
 
 .planner-automation-grid {
   display: grid;
-  grid-template-columns: minmax(0, 1.12fr) minmax(240px, 0.88fr);
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.8fr);
   gap: 1rem;
 }
 
