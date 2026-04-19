@@ -1,0 +1,1176 @@
+const STORAGE_KEY = "gracewoodPlanningSummary";
+
+const state = {
+  calendarDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+  selectedDate: null,
+  selectedDateStatus: null,
+  selectedDateDescription: "",
+  estimate: {
+    eventType: "wedding",
+    weddingDay: "Saturday",
+    hours: 4,
+    ceremony: false,
+    coordination: false,
+    bartending: false,
+    extraHours: 0,
+    base: 6500,
+    addOns: 0,
+    total: 6500,
+    addOnLabels: []
+  },
+  savedSummary: loadSummary(),
+  layoutItems: [],
+  activeLayoutPreset: "",
+  draggedItemId: null,
+  assistantHistory: []
+};
+
+const PRICING = {
+  wedding: {
+    Thursday: 5000,
+    Friday: 6000,
+    Saturday: 6500,
+    Sunday: 6000,
+    ceremony: 500,
+    coordination: 1500,
+    bartending: 1250,
+    extraHour: 250
+  },
+  hourlyRate: 250
+};
+
+const calendarStatusData = {
+  "2026-04-24": { status: "pending", note: "A wedding inquiry is currently being reviewed for this Friday date." },
+  "2026-04-25": { status: "booked", note: "Booked for a full wedding celebration." },
+  "2026-04-30": { status: "available", note: "A beautiful option for a Thursday event with added flexibility." },
+  "2026-05-02": { status: "booked", note: "Reserved for a private wedding event." },
+  "2026-05-08": { status: "pending", note: "Pending conversation for a social event." },
+  "2026-05-09": { status: "booked", note: "Booked for a full Saturday celebration." },
+  "2026-05-15": { status: "available", note: "Open for a Friday celebration or gathering." },
+  "2026-05-17": { status: "available", note: "Open for a Sunday wedding or social event." },
+  "2026-05-22": { status: "pending", note: "Pending hold for a corporate gathering." },
+  "2026-05-23": { status: "booked", note: "Reserved for a wedding reception." },
+  "2026-05-28": { status: "available", note: "Open for a Thursday wedding with strong value." },
+  "2026-06-05": { status: "available", note: "Available for a Friday event with full venue access." },
+  "2026-06-06": { status: "booked", note: "Booked for a signature Saturday wedding." },
+  "2026-06-12": { status: "pending", note: "Pending hold for a family celebration." },
+  "2026-06-14": { status: "available", note: "Available for a Sunday wedding or social event." },
+  "2026-06-20": { status: "booked", note: "Booked for a large reception." },
+  "2026-06-25": { status: "available", note: "Open for a polished Thursday celebration." },
+  "2026-07-03": { status: "available", note: "Open for a Friday celebration." },
+  "2026-07-11": { status: "booked", note: "Booked for a wedding and ceremony." },
+  "2026-07-18": { status: "pending", note: "Pending inquiry for a social gathering." }
+};
+
+const assistantKnowledge = [
+  {
+    question: "How many guests can Gracewood accommodate?",
+    answer:
+      "Gracewood can accommodate up to approximately 200 guests, making it a strong fit for weddings, showers, fundraisers, corporate events, and other celebrations that need both comfort and flexibility.",
+    keywords: ["guests", "capacity", "accommodate", "people"]
+  },
+  {
+    question: "What is included with a venue rental?",
+    answer:
+      "Venue rentals include use of up to 25 tables, 200 chairs, guest restrooms, free parking, access to the bridal suite, and kitchen prep space for your caterer. The goal is to provide the essential venue features clients need to plan with confidence.",
+    keywords: ["included", "rental", "tables", "chairs", "parking"]
+  },
+  {
+    question: "Can I host both a ceremony and reception at Gracewood?",
+    answer:
+      "Yes. Wedding clients can add ceremony use for an additional $500, allowing Gracewood to serve as a convenient setting for both the ceremony and reception experience.",
+    keywords: ["ceremony", "reception", "both"]
+  },
+  {
+    question: "What does bartending include?",
+    answer:
+      "Bartending is available through Gibsonia Bar Tending Service for $1,250. This includes the bartending service, necessary mixers, and plastic ware. Couples provide their own alcohol.",
+    keywords: ["bartending", "bar", "alcohol", "drink"]
+  },
+  {
+    question: "Do you offer planning or coordination help?",
+    answer:
+      "Yes. Day-of coordination is available through Beloved Event Co for an additional $1,500. This is a strong option for clients who want a more supported and organized event experience.",
+    keywords: ["planning", "coordination", "help", "support"]
+  },
+  {
+    question: "What types of events work best at Gracewood?",
+    answer:
+      "Gracewood is designed for weddings, showers, birthdays, family celebrations, fundraisers, holiday parties, and corporate events. The space is flexible enough to support both elegant social events and practical professional gatherings.",
+    keywords: ["events", "types", "best", "works"]
+  },
+  {
+    question: "How does pricing work for social or corporate events?",
+    answer:
+      "Social and corporate events are priced at $250 per hour with access to the full venue. These events are typically scheduled between 10am and 8pm.",
+    keywords: ["pricing", "social", "corporate", "hourly"]
+  },
+  {
+    question: "How do I know if my date is available?",
+    answer:
+      "Use the availability calendar to explore open dates, booked dates, and pending inquiries. Once you find a date that works, you can submit an inquiry with your event details to begin the booking conversation.",
+    keywords: ["date", "available", "availability", "calendar"]
+  },
+  {
+    question: "Can I customize the event layout?",
+    answer:
+      "Yes. Gracewood is designed to be flexible, and the layout planner allows you to explore table arrangements and guest flow ideas so you can better visualize your event before inquiring.",
+    keywords: ["layout", "customize", "tables", "planner"]
+  },
+  {
+    question: "What makes Gracewood different?",
+    answer:
+      "Gracewood combines a refined venue setting with a more modern planning experience. Instead of only browsing images, clients can explore availability, review pricing, estimate packages, and begin planning their layout in one place.",
+    keywords: ["different", "why", "unique", "gracewood"]
+  }
+];
+
+const relatedQuestionMap = {
+  "How many guests can Gracewood accommodate?": [
+    "What is included with a venue rental?",
+    "Can I customize the event layout?"
+  ],
+  "What is included with a venue rental?": [
+    "How many guests can Gracewood accommodate?",
+    "What types of events work best at Gracewood?"
+  ],
+  "Can I host both a ceremony and reception at Gracewood?": [
+    "Do you offer planning or coordination help?",
+    "How do I know if my date is available?"
+  ],
+  "What does bartending include?": [
+    "Do you offer planning or coordination help?",
+    "How does pricing work for social or corporate events?"
+  ],
+  "Do you offer planning or coordination help?": [
+    "Can I host both a ceremony and reception at Gracewood?",
+    "What makes Gracewood different?"
+  ],
+  "What types of events work best at Gracewood?": [
+    "How many guests can Gracewood accommodate?",
+    "How does pricing work for social or corporate events?"
+  ],
+  "How does pricing work for social or corporate events?": [
+    "What types of events work best at Gracewood?",
+    "How do I know if my date is available?"
+  ],
+  "How do I know if my date is available?": [
+    "Can I host both a ceremony and reception at Gracewood?",
+    "What makes Gracewood different?"
+  ],
+  "Can I customize the event layout?": [
+    "How many guests can Gracewood accommodate?",
+    "Do you offer planning or coordination help?"
+  ],
+  "What makes Gracewood different?": [
+    "How do I know if my date is available?",
+    "Can I customize the event layout?"
+  ]
+};
+
+const itemConfig = {
+  round: { label: "Round", className: "round", width: 72, height: 72, seats: 8 },
+  banquet: { label: "Banquet", className: "banquet", width: 112, height: 50, seats: 8 },
+  sweetheart: { label: "Sweetheart", className: "sweetheart", width: 104, height: 48, seats: 2 },
+  head: { label: "Head", className: "head", width: 132, height: 52, seats: 8 },
+  dance: { label: "Dance", className: "dance", width: 140, height: 108, seats: 0 },
+  gift: { label: "Gift", className: "gift", width: 94, height: 42, seats: 0 },
+  dessert: { label: "Dessert", className: "dessert", width: 94, height: 42, seats: 0 },
+  ceremonyRow: { label: "Ceremony Row", className: "banquet", width: 130, height: 28, seats: 8 },
+  altar: { label: "Altar", className: "sweetheart", width: 120, height: 40, seats: 0 },
+  presentation: { label: "Presentation", className: "head", width: 142, height: 46, seats: 0 }
+};
+
+const dom = {};
+
+document.addEventListener("DOMContentLoaded", () => {
+  cacheDom();
+  setupNavigation();
+  renderCalendar();
+  setupPackageTabs();
+  setupEstimator();
+  setupVisionBuilder();
+  setupLayoutPlanner();
+  setupAssistant();
+  setupSummaryDrawer();
+  setupInquiryForm();
+  setupScrollEffects();
+  hydrateSummary();
+  syncFormWithSummary();
+  setFooterYear();
+  updateJourneyProgress();
+});
+
+function cacheDom() {
+  dom.calendarMonthLabel = document.getElementById("calendarMonthLabel");
+  dom.calendarGrid = document.getElementById("calendarGrid");
+  dom.calendarPrev = document.getElementById("calendarPrev");
+  dom.calendarNext = document.getElementById("calendarNext");
+  dom.selectedDateLabel = document.getElementById("selectedDateLabel");
+  dom.selectedDateStatus = document.getElementById("selectedDateStatus");
+  dom.selectedDateDescription = document.getElementById("selectedDateDescription");
+  dom.saveDateButton = document.getElementById("saveDateButton");
+
+  dom.packageTabs = document.querySelectorAll(".segment-button");
+  dom.packagePanels = document.querySelectorAll(".package-panel");
+
+  dom.estimateEventType = document.getElementById("estimateEventType");
+  dom.estimateWeddingDay = document.getElementById("estimateWeddingDay");
+  dom.estimateHoursRange = document.getElementById("estimateHoursRange");
+  dom.estimateHoursValue = document.getElementById("estimateHoursValue");
+  dom.estimateCeremony = document.getElementById("estimateCeremony");
+  dom.estimateCoordination = document.getElementById("estimateCoordination");
+  dom.estimateBartending = document.getElementById("estimateBartending");
+  dom.estimateExtraHours = document.getElementById("estimateExtraHours");
+  dom.estimateBasePrice = document.getElementById("estimateBasePrice");
+  dom.estimateAddOnPrice = document.getElementById("estimateAddOnPrice");
+  dom.estimateTotalPrice = document.getElementById("estimateTotalPrice");
+  dom.estimateSelections = document.getElementById("estimateSelections");
+  dom.weddingDayField = document.getElementById("weddingDayField");
+  dom.hourlyHoursField = document.getElementById("hourlyHoursField");
+  dom.weddingAddOnFields = document.getElementById("weddingAddOnFields");
+  dom.stepperButtons = document.querySelectorAll(".stepper-button");
+
+  dom.visionEventType = document.getElementById("visionEventType");
+  dom.visionGuestRange = document.getElementById("visionGuestRange");
+  dom.visionAtmosphere = document.getElementById("visionAtmosphere");
+  dom.visionCeremony = document.getElementById("visionCeremony");
+  dom.visionCoordination = document.getElementById("visionCoordination");
+  dom.visionBartending = document.getElementById("visionBartending");
+  dom.visionRecommendation = document.getElementById("visionRecommendation");
+  dom.applyVisionRecommendation = document.getElementById("applyVisionRecommendation");
+
+  dom.eventSpaceCanvas = document.getElementById("eventSpaceCanvas");
+  dom.floorplanShell = document.getElementById("floorplanShell");
+  dom.addItemButtons = document.querySelectorAll("[data-item-type]");
+  dom.presetButtons = document.querySelectorAll(".preset-button");
+  dom.resetLayoutButton = document.getElementById("resetLayoutButton");
+  dom.printLayoutButton = document.getElementById("printLayoutButton");
+  dom.roundTableCount = document.getElementById("roundTableCount");
+  dom.banquetTableCount = document.getElementById("banquetTableCount");
+  dom.totalSeatingCount = document.getElementById("totalSeatingCount");
+  dom.danceFloorStatus = document.getElementById("danceFloorStatus");
+  dom.headTableStatus = document.getElementById("headTableStatus");
+  dom.plannerTips = document.getElementById("plannerTips");
+
+  dom.assistantQuestionChips = document.getElementById("assistantQuestionChips");
+  dom.assistantRelatedChips = document.getElementById("assistantRelatedChips");
+  dom.assistantThread = document.getElementById("assistantThread");
+  dom.assistantForm = document.getElementById("assistantForm");
+  dom.assistantInput = document.getElementById("assistantInput");
+
+  dom.summaryToggle = document.getElementById("summaryToggle");
+  dom.summaryDrawer = document.getElementById("summaryDrawer");
+  dom.summaryClose = document.getElementById("summaryClose");
+  dom.summaryEmptyState = document.getElementById("summaryEmptyState");
+  dom.summaryContent = document.getElementById("summaryContent");
+  dom.summaryEventType = document.getElementById("summaryEventType");
+  dom.summaryDate = document.getElementById("summaryDate");
+  dom.summaryPrice = document.getElementById("summaryPrice");
+  dom.summaryAddOns = document.getElementById("summaryAddOns");
+  dom.summaryLayout = document.getElementById("summaryLayout");
+  dom.summaryGuests = document.getElementById("summaryGuests");
+  dom.summarySeating = document.getElementById("summarySeating");
+  dom.printSummaryButton = document.getElementById("printSummaryButton");
+  dom.printSummaryContent = document.getElementById("printSummaryContent");
+
+  dom.inquiryForm = document.getElementById("inquiryForm");
+  dom.inquiryName = document.getElementById("inquiryName");
+  dom.inquiryEmail = document.getElementById("inquiryEmail");
+  dom.inquiryPhone = document.getElementById("inquiryPhone");
+  dom.inquiryEventType = document.getElementById("inquiryEventType");
+  dom.inquiryDate = document.getElementById("inquiryDate");
+  dom.inquiryGuests = document.getElementById("inquiryGuests");
+  dom.inquiryMessage = document.getElementById("inquiryMessage");
+  dom.formSuccessMessage = document.getElementById("formSuccessMessage");
+  dom.successSummary = document.getElementById("successSummary");
+
+  dom.mobileMenuToggle = document.getElementById("mobileMenuToggle");
+  dom.siteNav = document.getElementById("siteNav");
+  dom.backToTop = document.getElementById("backToTop");
+  dom.currentYear = document.getElementById("currentYear");
+  dom.journeySteps = document.querySelectorAll(".journey-step");
+}
+
+function setupNavigation() {
+  dom.mobileMenuToggle.addEventListener("click", () => {
+    const isOpen = dom.siteNav.classList.toggle("open");
+    dom.mobileMenuToggle.setAttribute("aria-expanded", String(isOpen));
+  });
+
+  document.querySelectorAll(".site-nav a").forEach((link) => {
+    link.addEventListener("click", () => {
+      dom.siteNav.classList.remove("open");
+      dom.mobileMenuToggle.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  window.addEventListener("scroll", () => {
+    dom.backToTop.classList.toggle("visible", window.scrollY > 500);
+  });
+
+  dom.backToTop.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
+
+function renderCalendar() {
+  const year = state.calendarDate.getFullYear();
+  const month = state.calendarDate.getMonth();
+  const monthStart = new Date(year, month, 1);
+  const monthEnd = new Date(year, month + 1, 0);
+  const startingDay = monthStart.getDay();
+  const daysInMonth = monthEnd.getDate();
+
+  dom.calendarMonthLabel.textContent = monthStart.toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric"
+  });
+
+  dom.calendarGrid.innerHTML = "";
+
+  for (let index = 0; index < startingDay; index += 1) {
+    const filler = document.createElement("button");
+    filler.className = "calendar-day empty";
+    filler.disabled = true;
+    dom.calendarGrid.appendChild(filler);
+  }
+
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = new Date(year, month, day);
+    const iso = toIsoDate(date);
+    const statusInfo = getCalendarStatus(iso);
+    const dayButton = document.createElement("button");
+    dayButton.className = `calendar-day ${statusInfo.status}`;
+    if (state.selectedDate === iso) {
+      dayButton.classList.add("selected");
+    }
+    dayButton.innerHTML = `<span class="calendar-day-number">${day}</span><span class="calendar-day-status">${capitalize(statusInfo.status)}</span>`;
+    dayButton.addEventListener("click", () => selectCalendarDate(iso, statusInfo));
+    dom.calendarGrid.appendChild(dayButton);
+  }
+
+  dom.calendarPrev.onclick = () => {
+    state.calendarDate = new Date(year, month - 1, 1);
+    renderCalendar();
+  };
+  dom.calendarNext.onclick = () => {
+    state.calendarDate = new Date(year, month + 1, 1);
+    renderCalendar();
+  };
+}
+
+function getCalendarStatus(iso) {
+  return (
+    calendarStatusData[iso] || {
+      status: "available",
+      note: "This date is currently open for weddings, social gatherings, or corporate events."
+    }
+  );
+}
+
+function selectCalendarDate(iso, statusInfo) {
+  state.selectedDate = iso;
+  state.selectedDateStatus = statusInfo.status;
+  state.selectedDateDescription = statusInfo.note;
+
+  dom.selectedDateLabel.textContent = formatLongDate(iso);
+  dom.selectedDateStatus.textContent = capitalize(statusInfo.status);
+  dom.selectedDateStatus.className = `status-pill ${statusInfo.status}`;
+  dom.selectedDateDescription.textContent = statusInfo.note;
+  dom.saveDateButton.disabled = false;
+  renderCalendar();
+  updateJourneyProgress();
+}
+
+function setupPackageTabs() {
+  dom.packageTabs.forEach((button) => {
+    button.addEventListener("click", () => {
+      dom.packageTabs.forEach((tab) => tab.classList.remove("active"));
+      dom.packagePanels.forEach((panel) => panel.classList.remove("active"));
+      button.classList.add("active");
+      document.getElementById(button.dataset.panel).classList.add("active");
+      markJourneyStep("packages", true);
+    });
+  });
+}
+
+function setupEstimator() {
+  const updateAll = () => {
+    state.estimate.eventType = dom.estimateEventType.value;
+    state.estimate.weddingDay = dom.estimateWeddingDay.value;
+    state.estimate.hours = Number(dom.estimateHoursRange.value);
+    state.estimate.ceremony = dom.estimateCeremony.checked;
+    state.estimate.coordination = dom.estimateCoordination.checked;
+    state.estimate.bartending = dom.estimateBartending.checked;
+    state.estimate.extraHours = Math.max(0, Number(dom.estimateExtraHours.value) || 0);
+
+    dom.estimateHoursValue.textContent = String(state.estimate.hours);
+
+    const isWedding = state.estimate.eventType === "wedding";
+    dom.weddingDayField.classList.toggle("is-hidden", !isWedding);
+    dom.weddingAddOnFields.classList.toggle("is-hidden", !isWedding);
+    dom.hourlyHoursField.classList.toggle("is-hidden", isWedding);
+
+    if (isWedding) {
+      const base = PRICING.wedding[state.estimate.weddingDay];
+      let addOns = 0;
+      const labels = [state.estimate.weddingDay + " wedding package"];
+      if (state.estimate.ceremony) {
+        addOns += PRICING.wedding.ceremony;
+        labels.push("Ceremony add-on");
+      }
+      if (state.estimate.coordination) {
+        addOns += PRICING.wedding.coordination;
+        labels.push("Day-of coordination");
+      }
+      if (state.estimate.bartending) {
+        addOns += PRICING.wedding.bartending;
+        labels.push("Bartending");
+      }
+      if (state.estimate.extraHours > 0) {
+        addOns += state.estimate.extraHours * PRICING.wedding.extraHour;
+        labels.push(`${state.estimate.extraHours} extra hour${state.estimate.extraHours > 1 ? "s" : ""}`);
+      }
+      state.estimate.base = base;
+      state.estimate.addOns = addOns;
+      state.estimate.total = base + addOns;
+      state.estimate.addOnLabels = labels;
+    } else {
+      const base = state.estimate.hours * PRICING.hourlyRate;
+      const labels = [`${capitalize(state.estimate.eventType)} event hourly rental`, `${state.estimate.hours} hour${state.estimate.hours > 1 ? "s" : ""}`];
+      state.estimate.base = base;
+      state.estimate.addOns = 0;
+      state.estimate.total = base;
+      state.estimate.addOnLabels = labels;
+      dom.estimateCeremony.checked = false;
+      dom.estimateCoordination.checked = false;
+      dom.estimateBartending.checked = false;
+      dom.estimateExtraHours.value = 0;
+      state.estimate.ceremony = false;
+      state.estimate.coordination = false;
+      state.estimate.bartending = false;
+      state.estimate.extraHours = 0;
+    }
+
+    dom.estimateBasePrice.textContent = formatCurrency(state.estimate.base);
+    dom.estimateAddOnPrice.textContent = formatCurrency(state.estimate.addOns);
+    dom.estimateTotalPrice.textContent = formatCurrency(state.estimate.total);
+    dom.estimateSelections.innerHTML = "";
+    state.estimate.addOnLabels.forEach((label) => {
+      const tag = document.createElement("li");
+      tag.textContent = label;
+      dom.estimateSelections.appendChild(tag);
+    });
+
+    updateSavedSummary({
+      eventType: formatEventTypeLabel(state.estimate.eventType),
+      estimatedPrice: formatCurrency(state.estimate.total),
+      addOns: getEstimatorAddOnSummary()
+    });
+    updateJourneyProgress();
+  };
+
+  dom.estimateEventType.addEventListener("change", updateAll);
+  dom.estimateWeddingDay.addEventListener("change", updateAll);
+  dom.estimateHoursRange.addEventListener("input", updateAll);
+  dom.estimateCeremony.addEventListener("change", updateAll);
+  dom.estimateCoordination.addEventListener("change", updateAll);
+  dom.estimateBartending.addEventListener("change", updateAll);
+  dom.estimateExtraHours.addEventListener("input", updateAll);
+  dom.stepperButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const current = Number(dom.estimateExtraHours.value) || 0;
+      const next = button.dataset.stepper === "increase" ? current + 1 : current - 1;
+      dom.estimateExtraHours.value = String(Math.min(8, Math.max(0, next)));
+      updateAll();
+    });
+  });
+
+  dom.saveDateButton.addEventListener("click", () => {
+    if (!state.selectedDate) return;
+    updateSavedSummary({ selectedDate: formatLongDate(state.selectedDate) });
+    dom.inquiryDate.value = state.selectedDate;
+    markJourneyStep("date", true);
+  });
+
+  updateAll();
+}
+
+function getEstimatorAddOnSummary() {
+  const labels = [];
+  if (state.estimate.eventType === "wedding") {
+    if (state.estimate.ceremony) labels.push("Ceremony");
+    if (state.estimate.coordination) labels.push("Coordination");
+    if (state.estimate.bartending) labels.push("Bartending");
+    if (state.estimate.extraHours) labels.push(`${state.estimate.extraHours} extra hour${state.estimate.extraHours > 1 ? "s" : ""}`);
+  } else {
+    labels.push(`${state.estimate.hours} hour${state.estimate.hours > 1 ? "s" : ""} rental`);
+  }
+  return labels.length ? labels.join(", ") : "None selected";
+}
+
+function setupVisionBuilder() {
+  const updateRecommendation = () => {
+    const eventType = dom.visionEventType.value;
+    const guestRange = dom.visionGuestRange.value;
+    const atmosphere = dom.visionAtmosphere.value;
+    const ceremony = dom.visionCeremony.checked;
+    const coordination = dom.visionCoordination.checked;
+    const bartending = dom.visionBartending.checked;
+
+    let title = "Gracewood’s Friday/Sunday wedding package";
+    let summary = "Based on your selections, Gracewood’s Friday/Sunday wedding package with ceremony and day-of coordination may be the best fit for your event.";
+    let layout = "Wedding Reception Layout";
+    let price = 6000;
+    let note = "A balanced option that pairs value with an elevated guest experience.";
+
+    if (eventType === "wedding") {
+      if (guestRange === "150-200") {
+        title = "Gracewood’s Saturday wedding package";
+        price = 6500;
+        layout = ceremony ? "Ceremony + Reception Layout" : "Wedding Reception Layout";
+        note = "A strong fit for higher guest counts and a fuller celebration timeline.";
+      } else if (atmosphere === "welcoming" || guestRange === "up-to-75") {
+        title = "Gracewood’s Thursday wedding package";
+        price = 5000;
+        layout = ceremony ? "Ceremony + Reception Layout" : "Wedding Reception Layout";
+        note = "A thoughtful value-focused option for more intimate celebrations.";
+      }
+      if (ceremony) price += PRICING.wedding.ceremony;
+      if (coordination) price += PRICING.wedding.coordination;
+      if (bartending) price += PRICING.wedding.bartending;
+      summary = `Based on your selections, ${title}${ceremony ? " with ceremony" : ""}${coordination ? " and day-of coordination" : ""}${bartending ? " plus bartending" : ""} may be the best fit for your event.`;
+    } else if (eventType === "social") {
+      title = "Gracewood’s hourly social event rental";
+      price = guestRange === "150-200" ? 1500 : guestRange === "75-150" ? 1250 : 1000;
+      layout = "Shower / Social Event Layout";
+      note = "This recommendation keeps the room feeling open, welcoming, and easy to customize.";
+      summary = "Based on your selections, Gracewood’s hourly social event rental may be the best fit for your event.";
+    } else {
+      title = "Gracewood’s hourly corporate event rental";
+      price = guestRange === "150-200" ? 1750 : guestRange === "75-150" ? 1250 : 1000;
+      layout = "Corporate Event Layout";
+      note = "This recommendation supports practical circulation and a polished guest experience.";
+      summary = "Based on your selections, Gracewood’s hourly corporate event rental may be the best fit for your event.";
+    }
+
+    dom.visionRecommendation.innerHTML = `
+      <p class="recommendation-kicker">Recommended package</p>
+      <h4>${title}</h4>
+      <p>${summary}</p>
+      <ul class="recommendation-meta">
+        <li><strong>Suggested layout:</strong> ${layout}</li>
+        <li><strong>Estimated planning total:</strong> ${formatCurrency(price)}</li>
+        <li><strong>Planning note:</strong> ${note}</li>
+      </ul>
+      <button class="button button-secondary" id="applyVisionRecommendation" type="button">Apply Recommendation to My Plan</button>
+    `;
+
+    document.getElementById("applyVisionRecommendation").addEventListener("click", () => {
+      if (eventType === "wedding") {
+        dom.estimateEventType.value = "wedding";
+        if (title.includes("Saturday")) dom.estimateWeddingDay.value = "Saturday";
+        else if (title.includes("Thursday")) dom.estimateWeddingDay.value = "Thursday";
+        else dom.estimateWeddingDay.value = "Friday";
+        dom.estimateCeremony.checked = ceremony;
+        dom.estimateCoordination.checked = coordination;
+        dom.estimateBartending.checked = bartending;
+      } else {
+        dom.estimateEventType.value = eventType;
+        dom.estimateHoursRange.value = eventType === "corporate" && guestRange === "150-200" ? "7" : guestRange === "up-to-75" ? "4" : "5";
+      }
+      triggerEstimatorRefresh();
+      applyPresetByName(layout);
+      updateSavedSummary({
+        guestCount: humanizeGuestRange(guestRange),
+        preferredLayout: layout
+      });
+    });
+  };
+
+  [
+    dom.visionEventType,
+    dom.visionGuestRange,
+    dom.visionAtmosphere,
+    dom.visionCeremony,
+    dom.visionCoordination,
+    dom.visionBartending
+  ].forEach((field) => {
+    field.addEventListener("change", updateRecommendation);
+  });
+
+  updateRecommendation();
+}
+
+function triggerEstimatorRefresh() {
+  dom.estimateEventType.dispatchEvent(new Event("change"));
+}
+
+function setupLayoutPlanner() {
+  dom.addItemButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      addLayoutItem(button.dataset.itemType);
+      markJourneyStep("layout", true);
+    });
+  });
+
+  dom.presetButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      applyPreset(button.dataset.preset);
+      markJourneyStep("layout", true);
+    });
+  });
+
+  dom.resetLayoutButton.addEventListener("click", resetLayout);
+  dom.printLayoutButton.addEventListener("click", () => {
+    setPrintMode("layout");
+    window.print();
+  });
+  window.addEventListener("afterprint", clearPrintMode);
+  window.addEventListener("resize", clampAllLayoutItemsToCanvas);
+  renderLayoutItems();
+  updateLayoutSummary();
+}
+
+function addLayoutItem(type, x = 28, y = 28, labelOverride = "") {
+  const config = itemConfig[type];
+  if (!config) return;
+  const position = clampPositionToCanvas(x, y, config.width, config.height);
+  const item = {
+    id: `${type}-${Date.now()}-${Math.round(Math.random() * 9999)}`,
+    type,
+    x: position.x,
+    y: position.y,
+    width: config.width,
+    height: config.height,
+    label: labelOverride || config.label,
+    seats: config.seats
+  };
+  state.layoutItems.push(item);
+  renderLayoutItems();
+  updateLayoutSummary();
+}
+
+function renderLayoutItems() {
+  dom.eventSpaceCanvas.innerHTML = "";
+  dom.eventSpaceCanvas.classList.toggle("empty", state.layoutItems.length === 0);
+  state.layoutItems.forEach((item) => {
+    const config = itemConfig[item.type];
+    const element = document.createElement("div");
+    element.className = `layout-item ${config.className}`;
+    if (state.draggedItemId === item.id) {
+      element.classList.add("dragging");
+    }
+    element.style.left = `${item.x}px`;
+    element.style.top = `${item.y}px`;
+    element.style.width = `${item.width}px`;
+    element.style.height = `${item.height}px`;
+    element.dataset.itemId = item.id;
+    element.innerHTML = `<span>${item.label}</span><button class="remove-item" aria-label="Remove ${item.label}" data-remove-id="${item.id}" type="button">&times;</button>`;
+    element.addEventListener("pointerdown", startDrag);
+    dom.eventSpaceCanvas.appendChild(element);
+  });
+
+  dom.eventSpaceCanvas.querySelectorAll(".remove-item").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      removeLayoutItem(button.dataset.removeId);
+    });
+  });
+}
+
+function startDrag(event) {
+  if (event.target.closest(".remove-item")) return;
+  const itemId = event.currentTarget.dataset.itemId;
+  const item = state.layoutItems.find((entry) => entry.id === itemId);
+  if (!item) return;
+
+  state.draggedItemId = itemId;
+  event.currentTarget.classList.add("dragging");
+  const rect = dom.eventSpaceCanvas.getBoundingClientRect();
+  const offsetX = event.clientX - rect.left - item.x;
+  const offsetY = event.clientY - rect.top - item.y;
+
+  const move = (moveEvent) => {
+    const targetItem = state.layoutItems.find((entry) => entry.id === itemId);
+    if (!targetItem) return;
+    let nextX = moveEvent.clientX - rect.left - offsetX;
+    let nextY = moveEvent.clientY - rect.top - offsetY;
+    nextX = clamp(nextX, 0, rect.width - targetItem.width);
+    nextY = clamp(nextY, 0, rect.height - targetItem.height);
+    targetItem.x = nextX;
+    targetItem.y = nextY;
+    renderLayoutItems();
+  };
+
+  const stop = () => {
+    state.draggedItemId = null;
+    document.removeEventListener("pointermove", move);
+    document.removeEventListener("pointerup", stop);
+    const activeElement = dom.eventSpaceCanvas.querySelector(`[data-item-id="${itemId}"]`);
+    if (activeElement) activeElement.classList.remove("dragging");
+    updateLayoutSummary();
+  };
+
+  document.addEventListener("pointermove", move);
+  document.addEventListener("pointerup", stop);
+}
+
+function removeLayoutItem(itemId) {
+  state.layoutItems = state.layoutItems.filter((item) => item.id !== itemId);
+  renderLayoutItems();
+  updateLayoutSummary();
+}
+
+function resetLayout() {
+  state.layoutItems = [];
+  state.activeLayoutPreset = "";
+  renderLayoutItems();
+  updateLayoutSummary();
+  updateSavedSummary({ preferredLayout: "Not selected" });
+}
+
+function applyPreset(presetKey) {
+  state.layoutItems = [];
+  dom.presetButtons.forEach((button) => {
+    button.classList.toggle("active", button.dataset.preset === presetKey);
+  });
+  dom.floorplanShell.classList.add("loading-flash");
+  window.setTimeout(() => dom.floorplanShell.classList.remove("loading-flash"), 700);
+
+  const presets = {
+    "wedding-reception": [
+      { type: "dance", x: 170, y: 160 },
+      { type: "head", x: 410, y: 62 },
+      { type: "gift", x: 380, y: 280 },
+      { type: "dessert", x: 490, y: 280 },
+      { type: "round", x: 58, y: 38 },
+      { type: "round", x: 160, y: 34 },
+      { type: "round", x: 272, y: 36 },
+      { type: "round", x: 58, y: 260 },
+      { type: "round", x: 164, y: 270 },
+      { type: "round", x: 286, y: 258 },
+      { type: "round", x: 540, y: 180 }
+    ],
+    "ceremony-reception": [
+      { type: "altar", x: 82, y: 64, label: "Ceremony Focus" },
+      { type: "ceremonyRow", x: 52, y: 120 },
+      { type: "ceremonyRow", x: 52, y: 158 },
+      { type: "ceremonyRow", x: 52, y: 196 },
+      { type: "dance", x: 328, y: 148 },
+      { type: "sweetheart", x: 478, y: 66 },
+      { type: "round", x: 410, y: 190 },
+      { type: "round", x: 526, y: 188 },
+      { type: "round", x: 408, y: 288 },
+      { type: "round", x: 526, y: 286 }
+    ],
+    "social-shower": [
+      { type: "gift", x: 438, y: 88 },
+      { type: "dessert", x: 548, y: 88 },
+      { type: "round", x: 84, y: 94 },
+      { type: "round", x: 210, y: 90 },
+      { type: "round", x: 110, y: 246 },
+      { type: "round", x: 252, y: 250 },
+      { type: "sweetheart", x: 454, y: 248, label: "Host Table" }
+    ],
+    corporate: [
+      { type: "presentation", x: 466, y: 64, label: "Presentation Zone" },
+      { type: "banquet", x: 74, y: 78 },
+      { type: "banquet", x: 224, y: 78 },
+      { type: "banquet", x: 74, y: 156 },
+      { type: "banquet", x: 224, y: 156 },
+      { type: "banquet", x: 74, y: 238 },
+      { type: "banquet", x: 224, y: 238 },
+      { type: "dessert", x: 494, y: 262, label: "Refreshments" }
+    ]
+  };
+
+  const presetNames = {
+    "wedding-reception": "Wedding Reception Layout",
+    "ceremony-reception": "Ceremony + Reception Layout",
+    "social-shower": "Shower / Social Event Layout",
+    corporate: "Corporate Event Layout"
+  };
+
+  (presets[presetKey] || []).forEach((item) => {
+    addLayoutItem(item.type, item.x, item.y, item.label || "");
+  });
+
+  state.activeLayoutPreset = presetNames[presetKey] || "";
+  updateSavedSummary({ preferredLayout: state.activeLayoutPreset });
+}
+
+function applyPresetByName(name) {
+  const mapping = {
+    "Wedding Reception Layout": "wedding-reception",
+    "Ceremony + Reception Layout": "ceremony-reception",
+    "Shower / Social Event Layout": "social-shower",
+    "Corporate Event Layout": "corporate"
+  };
+  if (mapping[name]) {
+    applyPreset(mapping[name]);
+  }
+}
+
+function updateLayoutSummary() {
+  const counts = {
+    round: 0,
+    banquet: 0,
+    dance: 0,
+    headOrSweetheart: 0,
+    seating: 0
+  };
+
+  state.layoutItems.forEach((item) => {
+    if (item.type === "round") counts.round += 1;
+    if (item.type === "banquet" || item.type === "ceremonyRow") counts.banquet += item.type === "banquet" ? 1 : 0;
+    if (item.type === "dance") counts.dance += 1;
+    if (item.type === "head" || item.type === "sweetheart") counts.headOrSweetheart += 1;
+    counts.seating += item.seats;
+  });
+
+  dom.roundTableCount.textContent = String(counts.round);
+  dom.banquetTableCount.textContent = String(counts.banquet);
+  dom.totalSeatingCount.textContent = String(counts.seating);
+  dom.danceFloorStatus.textContent = counts.dance ? "Yes" : "No";
+  dom.headTableStatus.textContent = counts.headOrSweetheart ? "Yes" : "No";
+
+  dom.plannerTips.innerHTML = `
+    <li>Keep access clear to the Kitchen / Bar and restrooms.</li>
+    <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts." : "Leave open space for mingling and transitions."}</li>
+    <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}.` : "Choose a preset for a faster starting point."}</li>
+  `;
+
+  updateSavedSummary({
+    layoutSeating: `${counts.seating} guests`,
+    preferredLayout: state.activeLayoutPreset || state.savedSummary.preferredLayout || "Not selected"
+  });
+  updateJourneyProgress();
+}
+
+function setupAssistant() {
+  dom.assistantQuestionChips.innerHTML = "";
+  assistantKnowledge.forEach((entry) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "question-chip subtle";
+    chip.textContent = entry.question;
+    chip.addEventListener("click", () => askAssistant(entry.question));
+    dom.assistantQuestionChips.appendChild(chip);
+  });
+
+  const welcomeQuestion = "What makes Gracewood different?";
+  askAssistant(welcomeQuestion, true);
+
+  dom.assistantForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const value = dom.assistantInput.value.trim();
+    if (!value) return;
+    askAssistant(value);
+    dom.assistantInput.value = "";
+  });
+}
+
+function askAssistant(input, silentUser = false) {
+  const knowledge = matchAssistantAnswer(input);
+  if (!silentUser) {
+    appendAssistantMessage("user", input);
+  }
+  appendAssistantMessage("assistant", knowledge.answer);
+  renderRelatedQuestions(knowledge.question);
+  markJourneyStep("packages", true);
+}
+
+function matchAssistantAnswer(input) {
+  const normalized = input.toLowerCase();
+  const directMatch = assistantKnowledge.find((entry) => entry.question.toLowerCase() === normalized);
+  if (directMatch) return directMatch;
+
+  const keywordMatch = assistantKnowledge.find((entry) =>
+    entry.keywords.some((keyword) => normalized.includes(keyword))
+  );
+
+  if (keywordMatch) {
+    const recommendationAddon =
+      state.savedSummary.eventType && state.savedSummary.estimatedPrice
+        ? ` Based on your current plan, Gracewood is trending toward a ${state.savedSummary.eventType.toLowerCase()} estimate of ${state.savedSummary.estimatedPrice}.`
+        : "";
+
+    return {
+      question: keywordMatch.question,
+      answer:
+        keywordMatch.answer +
+        recommendationAddon +
+        " If you are ready, use the inquiry form to share your details and continue the conversation."
+    };
+  }
+
+  return {
+    question: "Planning guidance",
+    answer:
+      "Gracewood can help you check availability, compare pricing, visualize your layout, and prepare an inquiry. Try asking about guest count, pricing, layout customization, or what makes Gracewood different."
+  };
+}
+
+function appendAssistantMessage(role, text) {
+  const bubble = document.createElement("div");
+  bubble.className = `assistant-message ${role}`;
+  bubble.innerHTML = `<span class="assistant-role">${role === "assistant" ? "Gracewood Assistant" : "You"}</span><p>${text}</p>`;
+  dom.assistantThread.appendChild(bubble);
+  dom.assistantThread.scrollTop = dom.assistantThread.scrollHeight;
+}
+
+function renderRelatedQuestions(question) {
+  dom.assistantRelatedChips.innerHTML = "";
+  (relatedQuestionMap[question] || assistantKnowledge.slice(0, 2).map((entry) => entry.question)).forEach((related) => {
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "question-chip";
+    chip.textContent = related;
+    chip.addEventListener("click", () => askAssistant(related));
+    dom.assistantRelatedChips.appendChild(chip);
+  });
+}
+
+function setupSummaryDrawer() {
+  dom.summaryToggle.addEventListener("click", () => toggleSummaryDrawer(true));
+  dom.summaryClose.addEventListener("click", () => toggleSummaryDrawer(false));
+  dom.printSummaryButton.addEventListener("click", printSummary);
+}
+
+function toggleSummaryDrawer(open) {
+  dom.summaryDrawer.classList.toggle("open", open);
+  dom.summaryDrawer.setAttribute("aria-hidden", String(!open));
+}
+
+function updateSavedSummary(partial) {
+  state.savedSummary = {
+    eventType: partial.eventType ?? state.savedSummary.eventType ?? "Not selected",
+    selectedDate: partial.selectedDate ?? state.savedSummary.selectedDate ?? "Not selected",
+    estimatedPrice: partial.estimatedPrice ?? state.savedSummary.estimatedPrice ?? "Not selected",
+    addOns: partial.addOns ?? state.savedSummary.addOns ?? "None yet",
+    preferredLayout: partial.preferredLayout ?? state.savedSummary.preferredLayout ?? "Not selected",
+    guestCount: partial.guestCount ?? state.savedSummary.guestCount ?? "Not selected",
+    layoutSeating: partial.layoutSeating ?? state.savedSummary.layoutSeating ?? "0 guests"
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state.savedSummary));
+  hydrateSummary();
+}
+
+function hydrateSummary() {
+  const hasMeaningfulData = Object.values(state.savedSummary || {}).some(
+    (value) => value && value !== "Not selected" && value !== "None yet" && value !== "0 guests"
+  );
+
+  dom.summaryEmptyState.hidden = hasMeaningfulData;
+  dom.summaryContent.hidden = !hasMeaningfulData;
+  dom.summaryEventType.textContent = state.savedSummary.eventType || "Not selected";
+  dom.summaryDate.textContent = state.savedSummary.selectedDate || "Not selected";
+  dom.summaryPrice.textContent = state.savedSummary.estimatedPrice || "Not selected";
+  dom.summaryAddOns.textContent = state.savedSummary.addOns || "None yet";
+  dom.summaryLayout.textContent = state.savedSummary.preferredLayout || "Not selected";
+  dom.summaryGuests.textContent = state.savedSummary.guestCount || "Not selected";
+  dom.summarySeating.textContent = state.savedSummary.layoutSeating || "0 guests";
+}
+
+function printSummary() {
+  const summary = state.savedSummary;
+  setPrintMode("summary");
+  dom.printSummaryContent.innerHTML = `
+    <div class="print-summary-grid">
+      <div><strong>Event type:</strong> ${summary.eventType || "Not selected"}</div>
+      <div><strong>Selected date:</strong> ${summary.selectedDate || "Not selected"}</div>
+      <div><strong>Estimated guest count:</strong> ${summary.guestCount || "Not selected"}</div>
+      <div><strong>Selected add-ons:</strong> ${summary.addOns || "None yet"}</div>
+      <div><strong>Estimated price:</strong> ${summary.estimatedPrice || "Not selected"}</div>
+      <div><strong>Preferred layout:</strong> ${summary.preferredLayout || "Not selected"}</div>
+      <div><strong>Layout stats:</strong> ${summary.layoutSeating || "0 guests"}</div>
+    </div>
+  `;
+  window.print();
+}
+
+function setPrintMode(mode) {
+  document.body.dataset.printMode = mode;
+  document.body.classList.remove("print-summary-mode", "print-layout-mode");
+  document.body.classList.add(`print-${mode}-mode`);
+}
+
+function clearPrintMode() {
+  delete document.body.dataset.printMode;
+  document.body.classList.remove("print-summary-mode", "print-layout-mode");
+}
+
+function setupInquiryForm() {
+  dom.inquiryForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+    const details = {
+      name: dom.inquiryName.value.trim(),
+      email: dom.inquiryEmail.value.trim(),
+      phone: dom.inquiryPhone.value.trim(),
+      eventType: dom.inquiryEventType.value,
+      date: dom.inquiryDate.value,
+      guests: dom.inquiryGuests.value,
+      message: dom.inquiryMessage.value.trim()
+    };
+
+    updateSavedSummary({
+      eventType: details.eventType,
+      selectedDate: details.date ? formatLongDate(details.date) : state.savedSummary.selectedDate,
+      guestCount: details.guests ? `${details.guests} guests` : state.savedSummary.guestCount
+    });
+
+    dom.inquiryForm.hidden = true;
+    dom.formSuccessMessage.hidden = false;
+    dom.successSummary.innerHTML = `
+      <div class="success-summary-grid">
+        <div><strong>Name:</strong> ${details.name}</div>
+        <div><strong>Email:</strong> ${details.email}</div>
+        <div><strong>Phone:</strong> ${details.phone}</div>
+        <div><strong>Event type:</strong> ${details.eventType}</div>
+        <div><strong>Preferred date:</strong> ${details.date ? formatLongDate(details.date) : "Not specified"}</div>
+        <div><strong>Guest count:</strong> ${details.guests}</div>
+        <div><strong>Planning summary:</strong> ${state.savedSummary.estimatedPrice || "Estimate not built yet"}</div>
+        <div><strong>Message:</strong> ${details.message}</div>
+      </div>
+      <p class="success-followup">Thank you for your inquiry. We’ve received your event details and Gracewood will be in touch soon to discuss availability and next steps.</p>
+    `;
+
+    markJourneyStep("inquiry", true);
+    toggleSummaryDrawer(true);
+  });
+}
+
+function syncFormWithSummary() {
+  if (state.savedSummary.eventType && state.savedSummary.eventType !== "Not selected") {
+    const option = Array.from(dom.inquiryEventType.options).find(
+      (entry) => entry.value.toLowerCase() === state.savedSummary.eventType.toLowerCase()
+    );
+    if (option) dom.inquiryEventType.value = option.value;
+  }
+  if (state.savedSummary.guestCount && state.savedSummary.guestCount.endsWith(" guests")) {
+    const guests = Number.parseInt(state.savedSummary.guestCount, 10);
+    if (!Number.isNaN(guests)) dom.inquiryGuests.value = String(guests);
+  }
+  if (state.selectedDate) {
+    dom.inquiryDate.value = state.selectedDate;
+  }
+}
+
+function setupScrollEffects() {
+  const revealItems = document.querySelectorAll(".reveal");
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.14 }
+  );
+
+  revealItems.forEach((item) => observer.observe(item));
+}
+
+function markJourneyStep(step, active) {
+  dom.journeySteps.forEach((card) => {
+    if (card.dataset.step === step && active) {
+      card.classList.add("active");
+      const status = card.querySelector(".step-status");
+      if (status) status.textContent = "Completed";
+    }
+  });
+}
+
+function updateJourneyProgress() {
+  if (state.selectedDate) markJourneyStep("date", true);
+  if (state.estimate.total > 0) markJourneyStep("packages", true);
+  if (state.layoutItems.length > 0 || state.activeLayoutPreset) markJourneyStep("layout", true);
+  if (!dom.formSuccessMessage.hidden) markJourneyStep("inquiry", true);
+}
+
+function setFooterYear() {
+  dom.currentYear.textContent = String(new Date().getFullYear());
+}
+
+function loadSummary() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    return raw ? JSON.parse(raw) : {};
+  } catch (error) {
+    return {};
+  }
+}
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0
+  }).format(value);
+}
+
+function formatLongDate(iso) {
+  const date = typeof iso === "string" ? new Date(`${iso}T00:00:00`) : iso;
+  return date.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: "numeric"
+  });
+}
+
+function toIsoDate(date) {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function capitalize(value) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
+function formatEventTypeLabel(value) {
+  const labels = {
+    wedding: "Wedding",
+    social: "Social Event",
+    corporate: "Corporate Event"
+  };
+  return labels[value] || capitalize(value);
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function clampPositionToCanvas(x, y, width, height) {
+  const rect = dom.eventSpaceCanvas.getBoundingClientRect();
+  const maxX = Math.max(0, rect.width - width);
+  const maxY = Math.max(0, rect.height - height);
+  return {
+    x: clamp(x, 0, maxX),
+    y: clamp(y, 0, maxY)
+  };
+}
+
+function clampAllLayoutItemsToCanvas() {
+  if (!state.layoutItems.length) return;
+  state.layoutItems = state.layoutItems.map((item) => {
+    const position = clampPositionToCanvas(item.x, item.y, item.width, item.height);
+    return { ...item, x: position.x, y: position.y };
+  });
+  renderLayoutItems();
+}
+
+function humanizeGuestRange(range) {
+  const map = {
+    "up-to-75": "Up to 75 guests",
+    "75-150": "75 to 150 guests",
+    "150-200": "150 to 200 guests"
+  };
+  return map[range] || "Not selected";
+}
