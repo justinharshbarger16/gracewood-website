@@ -588,7 +588,7 @@ function syncLayoutPreferencesFromInputs() {
     guestCount: clamp(Number(dom.layoutGuestCount.value) || 120, 20, 200),
     tableStyle: dom.layoutTableStyle.value,
     cateringStyle: dom.layoutCateringStyle.value,
-    headStyle: dom.layoutIncludeSweetheart.checked ? "sweetheart" : "none",
+    headStyle: dom.layoutHeadStyle ? dom.layoutHeadStyle.value : "none",
     includeCeremony: dom.layoutIncludeCeremony.checked,
     includeBuffet: dom.layoutCateringStyle.value === "buffet",
     includeCookieTable: false,
