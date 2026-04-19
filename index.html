@@ -52,12 +52,6 @@
                 <strong>A welcoming vision for celebrations that feel beautiful, personal, and clear to plan.</strong>
               </figcaption>
             </figure>
-            <div class="hero-color-strip">
-              <span>Warm</span>
-              <span>Polished</span>
-              <span>Community-oriented</span>
-              <span>Flexible</span>
-            </div>
           </div>
 
           <div class="hero-copy reveal">
@@ -79,27 +73,27 @@
               <div class="trust-pill">ADA accessible</div>
             </div>
             <div class="hero-guidance-list">
-              <article class="hero-guidance-card">
+              <a href="#availability" class="hero-guidance-card">
                 <span class="planning-step">01</span>
                 <div>
                   <h3>Choose your date</h3>
                   <p>See availability before you build the rest of your plan.</p>
                 </div>
-              </article>
-              <article class="hero-guidance-card">
+              </a>
+              <a href="#packages" class="hero-guidance-card">
                 <span class="planning-step">02</span>
                 <div>
                   <h3>Build your package</h3>
                   <p>Estimate pricing with clearer visibility into add-ons and support.</p>
                 </div>
-              </article>
-              <article class="hero-guidance-card">
+              </a>
+              <a href="#tools" class="hero-guidance-card">
                 <span class="planning-step">03</span>
                 <div>
                   <h3>Generate your room</h3>
                   <p>Use the smarter layout assistant to visualize guest flow more naturally.</p>
                 </div>
-              </article>
+              </a>
             </div>
           </div>
         </div>
@@ -522,20 +516,19 @@
                           </select>
                         </label>
                         <label>
-                          Dance floor
-                          <select id="layoutDanceFloorSize">
-                            <option value="standard">Standard dance floor</option>
-                            <option value="large">Larger dance floor</option>
-                            <option value="none">No dance floor</option>
+                          Layout style
+                          <select id="layoutMode">
+                            <option value="reception">Reception layout</option>
+                            <option value="ceremony-reception">Ceremony + reception layout</option>
+                            <option value="social">Social / shower layout</option>
+                            <option value="corporate">Corporate layout</option>
                           </select>
                         </label>
                         <label>
-                          Dessert / sweets
-                          <select id="layoutDessertStyle">
-                            <option value="cookie">Cookie table</option>
-                            <option value="dessert">Dessert table</option>
-                            <option value="both">Both cookie and dessert tables</option>
-                            <option value="none">No sweets display</option>
+                          DJ area
+                          <select id="layoutDjPlacement">
+                            <option value="top-left">Top-left near dance floor</option>
+                            <option value="left-wall">Left wall</option>
                           </select>
                         </label>
                       </div>
@@ -558,6 +551,14 @@
                           <span>Include gift table</span>
                         </label>
                         <label class="toggle-card">
+                          <input type="checkbox" id="layoutIncludeDanceFloor" checked>
+                          <span>Keep dance floor</span>
+                        </label>
+                        <label class="toggle-card">
+                          <input type="checkbox" id="layoutIncludeDj" checked>
+                          <span>Include DJ area</span>
+                        </label>
+                        <label class="toggle-card">
                           <input type="checkbox" id="layoutKeepOpenBarSide" checked>
                           <span>Keep kitchen/bar side more open</span>
                         </label>
@@ -576,7 +577,7 @@
                       <li>Guest count translated into round, long, or mixed table groupings</li>
                       <li>Open circulation from the main entrance into the event floor</li>
                       <li>Room access to the kitchen/bar side, bridal suite, and restrooms</li>
-                      <li>Buffet, sweets tables, gift table, head table, and ceremony setup placed where they naturally fit</li>
+                      <li>Buffet, sweets tables, gift table, sweetheart/head table, DJ, and ceremony setup placed where they naturally fit</li>
                     </ul>
                     <p class="planner-helper-copy">After the room is generated, you can still drag pieces around and make smaller manual adjustments if you want to fine-tune it.</p>
                   </div>
@@ -593,6 +594,7 @@
                     <button type="button" class="control-chip" data-item-type="sweetheart">Sweetheart Table</button>
                     <button type="button" class="control-chip" data-item-type="head">Head Table</button>
                     <button type="button" class="control-chip" data-item-type="dance">Dance Floor</button>
+                    <button type="button" class="control-chip" data-item-type="dj">DJ</button>
                     <button type="button" class="control-chip" data-item-type="gift">Gift Table</button>
                     <button type="button" class="control-chip" data-item-type="dessert">Dessert Table</button>
                     <button type="button" class="control-chip" data-item-type="buffet">Buffet</button>

@@ -646,48 +646,48 @@ function generateLayoutFromInputs() {
   }
 
   if (preferences.headStyle === "head") {
-    addItem("head", 436, preferences.includeCeremony ? 62 : 48);
+    addItem("head", 78, 468);
   } else if (preferences.headStyle === "sweetheart") {
-    addItem("sweetheart", 468, preferences.includeCeremony ? 66 : 54);
+    addItem("sweetheart", 154, 468);
   }
 
   if (preferences.includeDanceFloor) {
-    addItem("dance", preferences.tableStyle === "banquet" ? 242 : 188, preferences.includeCeremony ? 168 : 154);
+    addItem("dance", 98, 202);
   }
 
   if (preferences.includeGiftTable) {
-    addItem("gift", 402, 306);
+    addItem("gift", 44, 470);
   }
 
   if (preferences.includeCookieTable) {
-    addItem("cookie", 512, 308, "Cookie Table");
+    addItem("cookie", 236, 470, "Cookie Table");
   }
 
   if (preferences.includeBuffet) {
-    addItem("buffet", preferences.keepOpenBarSide ? 398 : 510, 110, "Buffet");
+    addItem("buffet", 266, 220, "Buffet");
   }
 
   const roundPositions = [
-    [60, 52], [178, 52], [296, 52],
-    [60, 188], [178, 188], [296, 188],
-    [60, 288], [178, 288], [296, 288],
-    [520, 182], [520, 284], [406, 206], [406, 300]
+    [42, 44], [170, 44], [298, 44], [426, 44],
+    [42, 146], [170, 146], [298, 146], [426, 146],
+    [42, 342], [170, 342], [298, 342], [426, 342]
   ];
 
   const banquetPositions = [
-    [76, 88], [228, 88], [76, 168], [228, 168],
-    [76, 248], [228, 248], [430, 200], [430, 280]
+    [28, 28], [28, 96], [28, 164],
+    [254, 188], [254, 256],
+    [28, 368], [28, 436]
   ];
 
   const mixedOrder = [
-    { type: "round", x: 66, y: 60 },
-    { type: "round", x: 190, y: 60 },
-    { type: "banquet", x: 72, y: 186 },
-    { type: "banquet", x: 228, y: 186 },
-    { type: "round", x: 68, y: 292 },
-    { type: "round", x: 198, y: 292 },
-    { type: "banquet", x: 422, y: 216 },
-    { type: "round", x: 528, y: 270 }
+    { type: "banquet", x: 28, y: 28 },
+    { type: "banquet", x: 28, y: 96 },
+    { type: "round", x: 300, y: 48 },
+    { type: "round", x: 426, y: 48 },
+    { type: "round", x: 300, y: 352 },
+    { type: "round", x: 426, y: 352 },
+    { type: "banquet", x: 28, y: 368 },
+    { type: "banquet", x: 28, y: 436 }
   ];
 
   if (preferences.tableStyle === "round") {
