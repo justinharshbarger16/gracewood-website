@@ -6,6 +6,18 @@ const state = {
   selectedDateStatus: null,
   selectedDateDescription: "",
   plannerGuideStep: "start",
+  layoutPreferences: {
+    eventType: "wedding",
+    guestCount: 120,
+    tableStyle: "round",
+    headStyle: "sweetheart",
+    includeCeremony: false,
+    includeBuffet: false,
+    includeCookieTable: true,
+    includeDanceFloor: true,
+    includeGiftTable: true,
+    keepOpenBarSide: true
+  },
   estimate: {
     eventType: "wedding",
     weddingDay: "Saturday",
@@ -85,7 +97,7 @@ const assistantKnowledge = [
   {
     question: "What does bartending include?",
     answer:
-      "Bartending is available through Gibsonia Bar Tending Service for $1,250. This includes the bartending service, necessary mixers, and plastic ware. Couples provide their own alcohol.",
+      "Bartending is available through Gibsonia Bar Tending Service for $1,250. This includes the bartending service, necessary mixers, and plastic ware. To keep service seamless and venue-ready, Gracewood works exclusively with Gibsonia Bar Tending Service for bartending, so outside bartending services are not permitted. Couples are welcome to provide their own alcohol for that service.",
     keywords: ["bartending", "bar", "alcohol", "drink"]
   },
   {
@@ -177,6 +189,8 @@ const itemConfig = {
   dance: { label: "Dance", className: "dance", width: 140, height: 108, seats: 0 },
   gift: { label: "Gift", className: "gift", width: 94, height: 42, seats: 0 },
   dessert: { label: "Dessert", className: "dessert", width: 94, height: 42, seats: 0 },
+  buffet: { label: "Buffet", className: "buffet", width: 112, height: 44, seats: 0 },
+  cookie: { label: "Cookie", className: "cookie", width: 92, height: 44, seats: 0 },
   ceremonyRow: { label: "Ceremony Row", className: "banquet", width: 130, height: 28, seats: 8 },
   altar: { label: "Altar", className: "sweetheart", width: 120, height: 40, seats: 0 },
   presentation: { label: "Presentation", className: "head", width: 142, height: 46, seats: 0 }
