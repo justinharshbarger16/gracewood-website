@@ -944,28 +944,7 @@ function updateLayoutSummary() {
         ? "Preset-guided circulation"
         : counts.seating > 0
           ? "Custom circulation in progress"
-          : "Select a preset to begin";
-  }
-
-  if (dom.plannerTips) {
-    dom.plannerTips.innerHTML = `
-      <li>Maintain a clear path from the Main Entrance into the center of the Main Event Space.</li>
-      <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts and keep the right-side service path open." : "Leave open space for mingling and transitions, especially near the lower entrance edge."}</li>
-      <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}. Keep kitchen/bar access open along the upper-right edge.` : "Choose a preset for a faster starting point and then fine-tune tables around the main focal zone."}</li>
-    `;
-  }
-
-  if (dom.plannerGuideText && dom.plannerGuideAction) {
-    if (!state.layoutItems.length) {
-      dom.plannerGuideText.textContent = "Start with a preset layout to place a focal point, guest seating, and circulation zones in a realistic Gracewood flow.";
-      dom.plannerGuideAction.textContent = "Apply a Starter Layout";
-    } else if (!state.savedSummary.selectedDate || state.savedSummary.selectedDate === "Not selected") {
-      dom.plannerGuideText.textContent = "Your layout is taking shape. Pair it with an availability check so your preferred plan and preferred date move together.";
-      dom.plannerGuideAction.textContent = "Open Saved Summary";
-    } else {
-      dom.plannerGuideText.textContent = "You have both a working layout and a planning direction. Review your saved summary, then move into inquiry when ready.";
-      dom.plannerGuideAction.textContent = "Review Saved Summary";
-    }
+          : "Select your planning inputs";
   }
 
   updateSavedSummary({
