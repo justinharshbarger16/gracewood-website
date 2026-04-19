@@ -5,6 +5,7 @@ const state = {
   selectedDate: null,
   selectedDateStatus: null,
   selectedDateDescription: "",
+  plannerGuideStep: "start",
   estimate: {
     eventType: "wedding",
     weddingDay: "Saturday",
@@ -251,7 +252,11 @@ function cacheDom() {
   dom.totalSeatingCount = document.getElementById("totalSeatingCount");
   dom.danceFloorStatus = document.getElementById("danceFloorStatus");
   dom.headTableStatus = document.getElementById("headTableStatus");
+  dom.layoutDensity = document.getElementById("layoutDensity");
+  dom.layoutFlow = document.getElementById("layoutFlow");
   dom.plannerTips = document.getElementById("plannerTips");
+  dom.plannerGuideText = document.getElementById("plannerGuideText");
+  dom.plannerGuideAction = document.getElementById("plannerGuideAction");
 
   dom.assistantQuestionChips = document.getElementById("assistantQuestionChips");
   dom.assistantRelatedChips = document.getElementById("assistantRelatedChips");
@@ -611,6 +616,7 @@ function setupLayoutPlanner() {
   dom.addItemButtons.forEach((button) => {
     button.addEventListener("click", () => {
       addLayoutItem(button.dataset.itemType);
+      state.activeLayoutPreset = state.activeLayoutPreset || "Custom Layout";
       markJourneyStep("layout", true);
     });
   });
@@ -629,6 +635,15 @@ function setupLayoutPlanner() {
   });
   window.addEventListener("afterprint", clearPrintMode);
   window.addEventListener("resize", clampAllLayoutItemsToCanvas);
+  if (dom.plannerGuideAction) {
+    dom.plannerGuideAction.addEventListener("click", () => {
+      if (!state.layoutItems.length) {
+        applyPreset("wedding-reception");
+      } else {
+        toggleSummaryDrawer(true);
+      }
+    });
+  }
   renderLayoutItems();
   updateLayoutSummary();
 }
@@ -726,6 +741,8 @@ function removeLayoutItem(itemId) {
 function resetLayout() {
   state.layoutItems = [];
   state.activeLayoutPreset = "";
+  state.plannerGuideStep = "start";
+  dom.presetButtons.forEach((button) => button.classList.remove("active"));
   renderLayoutItems();
   updateLayoutSummary();
   updateSavedSummary({ preferredLayout: "Not selected" });
@@ -741,48 +758,49 @@ function applyPreset(presetKey) {
 
   const presets = {
     "wedding-reception": [
-      { type: "dance", x: 170, y: 160 },
-      { type: "head", x: 410, y: 62 },
-      { type: "gift", x: 380, y: 280 },
-      { type: "dessert", x: 490, y: 280 },
-      { type: "round", x: 58, y: 38 },
-      { type: "round", x: 160, y: 34 },
-      { type: "round", x: 272, y: 36 },
-      { type: "round", x: 58, y: 260 },
-      { type: "round", x: 164, y: 270 },
-      { type: "round", x: 286, y: 258 },
-      { type: "round", x: 540, y: 180 }
+      { type: "head", x: 432, y: 44 },
+      { type: "dance", x: 188, y: 148 },
+      { type: "gift", x: 398, y: 308 },
+      { type: "dessert", x: 505, y: 308 },
+      { type: "round", x: 52, y: 42 },
+      { type: "round", x: 165, y: 38 },
+      { type: "round", x: 286, y: 40 },
+      { type: "round", x: 50, y: 270 },
+      { type: "round", x: 170, y: 272 },
+      { type: "round", x: 292, y: 272 },
+      { type: "round", x: 548, y: 166 }
     ],
     "ceremony-reception": [
-      { type: "altar", x: 82, y: 64, label: "Ceremony Focus" },
-      { type: "ceremonyRow", x: 52, y: 120 },
-      { type: "ceremonyRow", x: 52, y: 158 },
-      { type: "ceremonyRow", x: 52, y: 196 },
-      { type: "dance", x: 328, y: 148 },
-      { type: "sweetheart", x: 478, y: 66 },
-      { type: "round", x: 410, y: 190 },
-      { type: "round", x: 526, y: 188 },
-      { type: "round", x: 408, y: 288 },
-      { type: "round", x: 526, y: 286 }
+      { type: "altar", x: 76, y: 58, label: "Ceremony Focus" },
+      { type: "ceremonyRow", x: 44, y: 122 },
+      { type: "ceremonyRow", x: 44, y: 160 },
+      { type: "ceremonyRow", x: 44, y: 198 },
+      { type: "ceremonyRow", x: 44, y: 236 },
+      { type: "dance", x: 316, y: 154 },
+      { type: "sweetheart", x: 500, y: 60 },
+      { type: "round", x: 422, y: 194 },
+      { type: "round", x: 540, y: 194 },
+      { type: "round", x: 422, y: 298 },
+      { type: "round", x: 540, y: 298 }
     ],
     "social-shower": [
-      { type: "gift", x: 438, y: 88 },
-      { type: "dessert", x: 548, y: 88 },
-      { type: "round", x: 84, y: 94 },
-      { type: "round", x: 210, y: 90 },
-      { type: "round", x: 110, y: 246 },
-      { type: "round", x: 252, y: 250 },
-      { type: "sweetheart", x: 454, y: 248, label: "Host Table" }
+      { type: "gift", x: 444, y: 94 },
+      { type: "dessert", x: 552, y: 94 },
+      { type: "round", x: 96, y: 100 },
+      { type: "round", x: 226, y: 100 },
+      { type: "round", x: 122, y: 254 },
+      { type: "round", x: 262, y: 258 },
+      { type: "sweetheart", x: 462, y: 264, label: "Host Table" }
     ],
     corporate: [
-      { type: "presentation", x: 466, y: 64, label: "Presentation Zone" },
-      { type: "banquet", x: 74, y: 78 },
-      { type: "banquet", x: 224, y: 78 },
-      { type: "banquet", x: 74, y: 156 },
-      { type: "banquet", x: 224, y: 156 },
-      { type: "banquet", x: 74, y: 238 },
-      { type: "banquet", x: 224, y: 238 },
-      { type: "dessert", x: 494, y: 262, label: "Refreshments" }
+      { type: "presentation", x: 474, y: 60, label: "Presentation Zone" },
+      { type: "banquet", x: 74, y: 82 },
+      { type: "banquet", x: 228, y: 82 },
+      { type: "banquet", x: 74, y: 162 },
+      { type: "banquet", x: 228, y: 162 },
+      { type: "banquet", x: 74, y: 244 },
+      { type: "banquet", x: 228, y: 244 },
+      { type: "dessert", x: 506, y: 280, label: "Refreshments" }
     ]
   };
 
@@ -835,12 +853,37 @@ function updateLayoutSummary() {
   dom.totalSeatingCount.textContent = String(counts.seating);
   dom.danceFloorStatus.textContent = counts.dance ? "Yes" : "No";
   dom.headTableStatus.textContent = counts.headOrSweetheart ? "Yes" : "No";
+  if (dom.layoutDensity) {
+    dom.layoutDensity.textContent =
+      counts.seating >= 140 ? "High" : counts.seating >= 64 ? "Balanced" : counts.seating > 0 ? "Open" : "Not started";
+  }
+  if (dom.layoutFlow) {
+    dom.layoutFlow.textContent =
+      state.activeLayoutPreset
+        ? "Preset-guided circulation"
+        : counts.seating > 0
+          ? "Custom circulation in progress"
+          : "Select a preset to begin";
+  }
 
   dom.plannerTips.innerHTML = `
-    <li>Keep access clear to the Kitchen / Bar and restrooms.</li>
-    <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts." : "Leave open space for mingling and transitions."}</li>
-    <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}.` : "Choose a preset for a faster starting point."}</li>
+    <li>Maintain a clear path from the Main Entrance into the center of the Main Event Space.</li>
+    <li>${counts.seating > 120 ? "Use wider circulation aisles for larger guest counts and keep the right-side service path open." : "Leave open space for mingling and transitions, especially near the lower entrance edge."}</li>
+    <li>${state.activeLayoutPreset ? `Current preset: ${state.activeLayoutPreset}. Keep kitchen/bar access open along the upper-right edge.` : "Choose a preset for a faster starting point and then fine-tune tables around the main focal zone."}</li>
   `;
+
+  if (dom.plannerGuideText && dom.plannerGuideAction) {
+    if (!state.layoutItems.length) {
+      dom.plannerGuideText.textContent = "Start with a preset layout to place a focal point, guest seating, and circulation zones in a realistic Gracewood flow.";
+      dom.plannerGuideAction.textContent = "Apply a Starter Layout";
+    } else if (!state.savedSummary.selectedDate || state.savedSummary.selectedDate === "Not selected") {
+      dom.plannerGuideText.textContent = "Your layout is taking shape. Pair it with an availability check so your preferred plan and preferred date move together.";
+      dom.plannerGuideAction.textContent = "Open Saved Summary";
+    } else {
+      dom.plannerGuideText.textContent = "You have both a working layout and a planning direction. Review your saved summary, then move into inquiry when ready.";
+      dom.plannerGuideAction.textContent = "Review Saved Summary";
+    }
+  }
 
   updateSavedSummary({
     layoutSeating: `${counts.seating} guests`,
@@ -896,12 +939,17 @@ function matchAssistantAnswer(input) {
       state.savedSummary.eventType && state.savedSummary.estimatedPrice
         ? ` Based on your current plan, Gracewood is trending toward a ${state.savedSummary.eventType.toLowerCase()} estimate of ${state.savedSummary.estimatedPrice}.`
         : "";
+    const layoutPrompt =
+      state.savedSummary.preferredLayout && state.savedSummary.preferredLayout !== "Not selected"
+        ? ` Your saved layout is currently ${state.savedSummary.preferredLayout}.`
+        : " If you want to picture the room more clearly, try one of the preset layouts in the planner.";
 
     return {
       question: keywordMatch.question,
       answer:
         keywordMatch.answer +
         recommendationAddon +
+        layoutPrompt +
         " If you are ready, use the inquiry form to share your details and continue the conversation."
     };
   }

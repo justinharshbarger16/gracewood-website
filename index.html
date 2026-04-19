@@ -45,6 +45,12 @@
             <p class="hero-subheadline">
               A modern, elegant event venue in Gibsonia designed for weddings, social gatherings, and corporate events with flexible planning, clear pricing, and a seamless client experience.
             </p>
+            <div class="hero-editorial-note">
+              <span class="editorial-line"></span>
+              <p>
+                Gracewood is built for clients who want clarity early: understand the date, the budget, and the room before committing to the next planning conversation.
+              </p>
+            </div>
             <div class="hero-actions">
               <a href="#availability" class="button button-primary">Check Availability</a>
               <a href="#packages" class="button button-secondary">Explore Packages</a>
@@ -53,6 +59,23 @@
               <div class="trust-pill">Approx. 5,000 square feet</div>
               <div class="trust-pill">Up to 200 guests</div>
               <div class="trust-pill">ADA accessible</div>
+            </div>
+            <div class="hero-planning-strip">
+              <article class="planning-mini-card">
+                <span class="planning-step">01</span>
+                <h3>Check your date</h3>
+                <p>Review availability before building the rest of your plan.</p>
+              </article>
+              <article class="planning-mini-card">
+                <span class="planning-step">02</span>
+                <h3>Build a working budget</h3>
+                <p>See pricing, add-ons, and a realistic estimate in one place.</p>
+              </article>
+              <article class="planning-mini-card">
+                <span class="planning-step">03</span>
+                <h3>Picture the room</h3>
+                <p>Preview guest flow using a venue-based layout planner before inquiring.</p>
+              </article>
             </div>
           </div>
 
@@ -90,23 +113,36 @@
             <p>
               Gracewood was created to offer the Pittsburgh region a beautiful and versatile venue where every event feels personal. From weddings and showers to fundraisers and corporate celebrations, our space is designed to help hosts create memorable experiences with confidence, clarity, and ease.
             </p>
+            <p class="intro-supporting-copy">
+              Many venue websites ask clients to inquire before they feel informed. Gracewood is intentionally designed to reverse that experience and help hosts move toward a confident decision with more visibility from the start.
+            </p>
+            <div class="intro-actions">
+              <a href="#availability" class="button button-secondary small">Check Availability</a>
+              <a href="#tools" class="button button-primary small">Build Your Package</a>
+            </div>
           </div>
-          <div class="intro-stats">
-            <div class="stat-card">
-              <span>Capacity</span>
-              <strong>Up to 200 guests</strong>
+          <div class="intro-side-stack">
+            <div class="intro-stats">
+              <div class="stat-card">
+                <span>Capacity</span>
+                <strong>Up to 200 guests</strong>
+              </div>
+              <div class="stat-card">
+                <span>Parking</span>
+                <strong>Approximately 100 spots</strong>
+              </div>
+              <div class="stat-card">
+                <span>Included essentials</span>
+                <strong>Up to 25 tables and 200 chairs</strong>
+              </div>
+              <div class="stat-card">
+                <span>Support spaces</span>
+                <strong>Bridal suite, kitchen prep space, guest amenities</strong>
+              </div>
             </div>
-            <div class="stat-card">
-              <span>Parking</span>
-              <strong>Approximately 100 spots</strong>
-            </div>
-            <div class="stat-card">
-              <span>Included essentials</span>
-              <strong>Up to 25 tables and 200 chairs</strong>
-            </div>
-            <div class="stat-card">
-              <span>Support spaces</span>
-              <strong>Bridal suite, kitchen prep space, guest amenities</strong>
+            <div class="intro-quote-card">
+              <p>“A venue should help clients decide with confidence, not just browse.”</p>
+              <span>Gracewood planning philosophy</span>
             </div>
           </div>
         </div>
@@ -178,6 +214,10 @@
             <p>
               Gracewood is designed to make planning easier. Instead of simply browsing photos and sending a generic inquiry, guests can explore availability, review pricing, estimate their package, and begin visualizing their event experience in one place. The result is a more confident, modern, and client-friendly planning journey.
             </p>
+            <div class="difference-cta-row">
+              <a href="#tools" class="button button-primary small">Plan Your Layout</a>
+              <a href="#contact" class="button button-secondary small">Start Your Inquiry</a>
+            </div>
           </div>
           <div class="difference-points">
             <article>
@@ -567,6 +607,7 @@
                 <div class="planner-controls">
                   <div class="planner-control-group">
                     <h4>Add Elements</h4>
+                    <p class="planner-helper-copy">Add movable pieces only inside the Main Event Space while keeping circulation open to the kitchen, foyer, and restroom side of the building.</p>
                     <div class="control-chip-grid">
                       <button type="button" class="control-chip" data-item-type="round">Round Table</button>
                       <button type="button" class="control-chip" data-item-type="banquet">Banquet Table</button>
@@ -580,6 +621,7 @@
 
                   <div class="planner-control-group">
                     <h4>Preset Layouts</h4>
+                    <p class="planner-helper-copy">Start with a polished concept, then drag tables into place to match your guest count and event flow.</p>
                     <div class="preset-buttons">
                       <button type="button" class="preset-button" data-preset="wedding-reception">Wedding Reception Layout</button>
                       <button type="button" class="preset-button" data-preset="ceremony-reception">Ceremony + Reception Layout</button>
@@ -589,17 +631,31 @@
                   </div>
                 </div>
 
+                <div class="planner-venue-meta">
+                  <span>Front foyer and arrival edge</span>
+                  <span>Service corridor to Kitchen / Bar</span>
+                  <span>Focal wall for ceremony or head table</span>
+                  <span>Restroom and bridal suite access kept clear</span>
+                </div>
+
                 <div class="floorplan-shell" id="floorplanShell">
                   <div class="venue-floorplan" id="venueFloorplan">
                     <div class="room room-kitchen">Kitchen / Bar</div>
+                    <div class="room room-corridor">Service Corridor</div>
                     <div class="room room-ladies">Ladies Restroom</div>
                     <div class="room room-gents">Gents Restroom</div>
                     <div class="room room-bridal">Bridal Suite</div>
                     <div class="room room-janitor">Janitor</div>
                     <div class="room room-utilities">Utilities</div>
+                    <div class="room room-foyer">Guest Foyer</div>
                     <div class="room room-entrance">Main Entrance / Front Access</div>
                     <div class="room room-event">
                       <div class="room-title">Main Event Space</div>
+                      <div class="event-space-guides" aria-hidden="true">
+                        <span class="guide-label guide-focal">Focal wall</span>
+                        <span class="guide-label guide-entry">Preferred entry aisle</span>
+                        <span class="guide-label guide-service">Service path</span>
+                      </div>
                       <div class="event-space-canvas" id="eventSpaceCanvas"></div>
                     </div>
                   </div>
@@ -616,6 +672,8 @@
                 <div><span>Total estimated seating</span><strong id="totalSeatingCount">0</strong></div>
                 <div><span>Dance floor</span><strong id="danceFloorStatus">No</strong></div>
                 <div><span>Sweetheart / head table</span><strong id="headTableStatus">No</strong></div>
+                <div><span>Preset in use</span><strong id="layoutPresetName">Custom</strong></div>
+                <div><span>Flow note</span><strong id="layoutFlowStatus">Open circulation</strong></div>
               </div>
               <div class="planner-tips">
                 <h4>Quick layout tips</h4>
@@ -624,6 +682,17 @@
                   <li>Use a focal point for your head or sweetheart table.</li>
                   <li>Leave open circulation from the entrance into the main room.</li>
                 </ul>
+              </div>
+              <div class="planner-guide-card">
+                <h4>Next recommended step</h4>
+                <p id="plannerGuideText">Start with a preset layout to place a focal point, guest seating, and circulation zones in a realistic Gracewood flow.</p>
+                <button class="button button-secondary full-width" id="plannerGuideAction" type="button">Apply a Starter Layout</button>
+              </div>
+              <p class="planner-seat-note">Seating assumptions: round table = 8 guests, banquet table = 8 guests, sweetheart table = 2 guests, head table = 8 guests.</p>
+              <div class="planner-note-card">
+                <h4>Ready to move forward?</h4>
+                <p>When your date, pricing, and layout feel aligned, your inquiry can start with stronger details and fewer open questions.</p>
+                <a href="#contact" class="button button-primary full-width">Start Your Inquiry</a>
               </div>
             </aside>
           </div>
